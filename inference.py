@@ -12,6 +12,8 @@ from tqdm import tqdm
 
 from train import set_seed
 
+# 모델과 토큰화된 테스트 데이터셋을 입력받음 (batch_size도 config에?)
+# 모델을 디바이스에 올려서 예측 라벨, 일치 확률을 계산
 def inference(model, tokenized_sent, device):
   """
     test dataset을 DataLoader로 만들어 준 후,
@@ -38,6 +40,7 @@ def inference(model, tokenized_sent, device):
   
   return np.concatenate(output_pred).tolist(), np.concatenate(output_prob, axis=0).tolist()
 
+# dict를 이용해 num -> label
 def num_to_label(label):
   """
     숫자로 되어 있던 class를 원본 문자열 라벨로 변환 합니다.
@@ -68,13 +71,12 @@ def main(args):
   """
   device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
   # load tokenizer
-  Tokenizer_NAME = "klue/bert-base"
+  Tokenizer_NAME = "klue/bert-base"  # 이것도 config로 정리할 수 있을듯
   tokenizer = AutoTokenizer.from_pretrained(Tokenizer_NAME)
 
   ## load my model
   MODEL_NAME = args.model_dir # model dir.
   model = AutoModelForSequenceClassification.from_pretrained(args.model_dir)
-  model.parameters
   model.to(device)
 
   ## load test datset
