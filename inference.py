@@ -1,6 +1,7 @@
 from transformers import AutoTokenizer, AutoConfig, AutoModelForSequenceClassification, Trainer, TrainingArguments
 from torch.utils.data import DataLoader
 from load_data import *
+from label_utils import *
 import pandas as pd
 import torch
 import torch.nn.functional as F
@@ -47,25 +48,6 @@ def inference(model, tokenized_sent, device):
     output_prob.append(prob)
   
   return np.concatenate(output_pred).tolist(), np.concatenate(output_prob, axis=0).tolist()
-
-def num_to_label(label):
-  '''
-  dict를 이용해 숫자로 된 class -> 문자열 label로 반환
-
-  Args:
-      label (_type_): _description_
-
-  Returns:
-      List: 문자열로 되어있는 label list 반환
-  '''
-
-  origin_label = []
-  with open('dict_num_to_label.pkl', 'rb') as f:
-    dict_num_to_label = pickle.load(f)
-  for v in label:
-    origin_label.append(dict_num_to_label[v])
-  
-  return origin_label
 
 ### load하는 부분은 train과 똑같으니 하나의 코드로 작성?
 def load_test_dataset(dataset_dir, tokenizer):

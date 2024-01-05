@@ -19,4 +19,21 @@ def label_to_num(label):
     
     return num_label
 
-# def num_to_label(label):
+def num_to_label(label):
+  '''
+  dict를 이용해 숫자로 된 class -> 문자열 label로 반환
+
+  Args:
+      label (_type_): _description_
+
+  Returns:
+      List: 문자열로 되어있는 label list 반환
+  '''
+
+  origin_label = []
+  with open('dict_num_to_label.pkl', 'rb') as f:
+    dict_num_to_label = pickle.load(f)
+  for v in label:
+    origin_label.append(dict_num_to_label[v])
+  
+  return origin_label
