@@ -1,10 +1,17 @@
 import sklearn
+from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_score
 
-# KLUE-RE task의 micro F1 점수를 구하는 함수이다. (단, no_relation 클래스는 제외하여 구한다.)
-# label_list는 가능한 모든 관계 라벨의 목록이다.
-# 각 클래스에 대한 모든 F1 점수를 계산한 뒤 그 평균을 내고, 출력값은 100을 곱해 퍼센트로 나타낸다.
 def klue_re_micro_f1(preds, labels):
-    """KLUE-RE micro f1 (except no_relation)"""
+    """
+    KLUE 관계 추출 작업에 대한 micro 평균 F1 score를 계산합니다.
+    
+    args:
+        preds: 예측된 라벨 목록입니다.
+        labels: 정답 라벨 목록입니다.
+    
+    returns:
+        float: "no_relation"을 제외한 라벨들에 대한 마이크로 평균 F1 점수(백분율)입니다.
+    """
     label_list = ['no_relation', 'org:top_members/employees', 'org:members',
        'org:product', 'per:title', 'org:alternate_names',
        'per:employee_of', 'org:place_of_headquarters', 'per:product',
@@ -23,7 +30,16 @@ def klue_re_micro_f1(preds, labels):
 
 # KLUE-RE task의 정밀도-재현율 곡선 아래 영역(AUPRC)을 계산한다.
 def klue_re_auprc(probs, labels):
-    """KLUE-RE AUPRC (with no_relation)"""
+    """
+    KLUE 관계 추출 작업에 대한 Precision-Recall Curve 아래 면적(AUPRC)을 계산합니다.
+    
+    args:
+        probs: 각 클래스에 대해 예측한 확률입니다.
+        labels: 각 예시에 대한 정답 라벨입니다.
+    
+    returns:
+        float: 모든 클래스의 평균 AUPRC를 백분율로 표시합니다.
+    """
     labels = np.eye(30)[labels]
 
     score = np.zeros((30,))
@@ -36,7 +52,26 @@ def klue_re_auprc(probs, labels):
 
 # F1 score, AUPRC를 위의 함수들을 통해 계산한다.
 def compute_metrics(pred):
-  """ validation을 위한 metrics function """
-  labels = pred.label_ids
-  preds = pred.predictions.argmax(-1)
-  probs = pred.predictions
+    """
+    예측을 위해 micro F1 score, AUPRC 및 정확도를 계산합니다.
+
+    args:
+        pred: label_ids 및 prediction 값을 포함하는 object입니다.
+  
+    returns:
+        dict: 'micro F1 scre', 'auprc', '정확도'를 포함한 dict입니다.
+    """
+    labels = pred.label_ids
+    preds = pred.predictions.argmax(-1)
+    probs = pred.predictions
+  
+    # calculate accuracy using sklearn's function
+    f1 = klue_re_micro_f1(preds, labels)
+    auprc = klue_re_auprc(probs, labels)
+    acc = accuracy_score(labels, preds) # 리더보드 평가에는 포함되지 않습니다.
+
+    return {
+        'micro f1 score': f1,
+        'auprc' : auprc,
+        'accuracy': acc,
+    }
