@@ -79,7 +79,7 @@ def load_test_dataset(dataset_dir, tokenizer):
 
   Returns:
       class 'pandas.core.series.Series': test_dataset['id']
-      tensor: tokenized_test로 raw test 데이터를 토큰화한 데이터(preprocessing X)
+      tensor: tokenized_test로 raw test 데이터를 토큰화한 데이터
       List: test_label로 현재 모든 test 데이터가 100으로 설정
   '''
   test_dataset = load_data(dataset_dir)
