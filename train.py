@@ -4,10 +4,10 @@ import pandas as pd
 import torch
 import numpy as np
 from transformers import AutoTokenizer, Trainer, TrainingArguments, RobertaConfig, RobertaTokenizer, RobertaForSequenceClassification, BertTokenizer
-from load_data import *
 import numpy as np
 import random
-from data_loader import load_and_tokenize_data
+from load_data import *
+from label_utils import *
 from metrics import compute_metrics
 from model import load_model
 
@@ -43,9 +43,20 @@ def train():
     MODEL_NAME = "klue/bert-base"
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 
-    # 데이터셋 만들기
-    RE_train_dataset = load_and_tokenize_data("../dataset/train/train.csv", tokenizer)
-    # RE_dev_dataset = load_and_tokenize_data("../dataset/train/dev.csv", tokenizer)
+    # load dataset
+    train_dataset = load_data("../dataset/train/train.csv")
+    # dev_dataset = load_data("../dataset/train/dev.csv") # validation용 데이터는 따로 만드셔야 합니다.
+
+    train_label = label_to_num(train_dataset['label'].values)
+    # dev_label = label_to_num(dev_dataset['label'].values)
+
+    # tokenizing dataset
+    tokenized_train = tokenized_dataset(train_dataset, tokenizer)
+    # tokenized_dev = tokenized_dataset(dev_dataset, tokenizer)
+
+    # make dataset for pytorch.
+    RE_train_dataset = RE_Dataset(tokenized_train, train_label)
+    # RE_dev_dataset = RE_Dataset(tokenized_dev, dev_label)
 
     # 디바이스에 올리기
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')

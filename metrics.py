@@ -5,11 +5,11 @@ def klue_re_micro_f1(preds, labels):
     """
     KLUE 관계 추출 작업에 대한 micro 평균 F1 score를 계산합니다.
     
-    args:
-        preds: 예측된 라벨 목록입니다.
-        labels: 정답 라벨 목록입니다.
+    Args:
+        preds (list): 예측된 라벨 목록입니다.
+        labels (list): 정답 라벨 목록입니다.
     
-    returns:
+    Returns:
         float: "no_relation"을 제외한 라벨들에 대한 마이크로 평균 F1 점수(백분율)입니다.
     """
     label_list = ['no_relation', 'org:top_members/employees', 'org:members',
@@ -33,11 +33,11 @@ def klue_re_auprc(probs, labels):
     """
     KLUE 관계 추출 작업에 대한 Precision-Recall Curve 아래 면적(AUPRC)을 계산합니다.
     
-    args:
-        probs: 각 클래스에 대해 예측한 확률입니다.
-        labels: 각 예시에 대한 정답 라벨입니다.
+    Args:
+        probs (numpy.ndarray): 각 클래스에 대해 예측한 확률입니다.
+        labels (numpy.ndarray): 각 예시에 대한 정답 라벨입니다.
     
-    returns:
+    Returns:
         float: 모든 클래스의 평균 AUPRC를 백분율로 표시합니다.
     """
     labels = np.eye(30)[labels]
@@ -55,10 +55,10 @@ def compute_metrics(pred):
     """
     예측을 위해 micro F1 score, AUPRC 및 정확도를 계산합니다.
 
-    args:
+    Args:
         pred: label_ids 및 prediction 값을 포함하는 object입니다.
   
-    returns:
+    Returns:
         dict: 'micro F1 scre', 'auprc', '정확도'를 포함한 dict입니다.
     """
     labels = pred.label_ids
