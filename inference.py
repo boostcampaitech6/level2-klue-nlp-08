@@ -11,19 +11,27 @@ import argparse
 from tqdm import tqdm
 
 from train import set_seed
+from tokenizing import tokenized_dataset
 
-# 모델과 토큰화된 테스트 데이터셋을 입력받음 (batch_size도 config에?)
-# 모델을 디바이스에 올려서 예측 라벨, 일치 확률을 계산
 def inference(model, tokenized_sent, device):
-  """
-    test dataset을 DataLoader로 만들어 준 후,
-    batch_size로 나눠 model이 예측 합니다.
-  """
+  '''
+  test dataset을 DataLoader로 만들어 준 후,
+  batch_size로 나눠 model이 예측한다.
+
+  Args:
+      model (class 'transformers.modeling_auto.AutoModelForSequenceClassification'): AutoModelForSequenceClassification에 해당하는 모델
+      tokenized_sent (class 'RE_Dataset'): RE_Dataset 클래스 객체
+      device (class 'torch.device'): PyTorch에서 디바이스를 나타내는 클래스
+
+  Returns:
+      List: 예측 결과에 대한 label(num) 값
+      List: 각 label에 대한 확률 값
+  '''
   dataloader = DataLoader(tokenized_sent, batch_size=16, shuffle=False)
   model.eval()
   output_pred = []
   output_prob = []
-  for i, data in enumerate(tqdm(dataloader)):
+  for _, data in enumerate(tqdm(dataloader)):
     with torch.no_grad():
       outputs = model(
           input_ids=data['input_ids'].to(device),
@@ -40,11 +48,17 @@ def inference(model, tokenized_sent, device):
   
   return np.concatenate(output_pred).tolist(), np.concatenate(output_prob, axis=0).tolist()
 
-# dict를 이용해 num -> label
 def num_to_label(label):
-  """
-    숫자로 되어 있던 class를 원본 문자열 라벨로 변환 합니다.
-  """
+  '''
+  dict를 이용해 숫자로 된 class -> 문자열 label로 반환
+
+  Args:
+      label (_type_): _description_
+
+  Returns:
+      List: 문자열로 되어있는 label list 반환
+  '''
+
   origin_label = []
   with open('dict_num_to_label.pkl', 'rb') as f:
     dict_num_to_label = pickle.load(f)
@@ -53,11 +67,21 @@ def num_to_label(label):
   
   return origin_label
 
+### load하는 부분은 train과 똑같으니 하나의 코드로 작성?
 def load_test_dataset(dataset_dir, tokenizer):
-  """
-    test dataset을 불러온 후,
-    tokenizing 합니다.
-  """
+  '''
+  test dataset을 불러온 후, tokenizing 진행한다.
+  
+
+  Args:
+      dataset_dir (String): test dataset directory
+      tokenizer (_type_): 모델에 해당하는 tokenizer
+
+  Returns:
+      class 'pandas.core.series.Series': test_dataset['id']
+      tensor: tokenized_test로 raw test 데이터를 토큰화한 데이터(preprocessing X)
+      List: test_label로 현재 모든 test 데이터가 100으로 설정
+  '''
   test_dataset = load_data(dataset_dir)
   test_label = list(map(int,test_dataset['label'].values))
   # tokenizing dataset
@@ -65,17 +89,20 @@ def load_test_dataset(dataset_dir, tokenizer):
   return test_dataset['id'], tokenized_test, test_label
 
 def main(args):
+  '''
+  주어진 dataset csv 파일과 같은 형태일 경우 inference 가능한 코드
+  '''
+
   set_seed(42)
-  """
-    주어진 dataset csv 파일과 같은 형태일 경우 inference 가능한 코드입니다.
-  """
+  
   device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+
   # load tokenizer
-  Tokenizer_NAME = "klue/bert-base"  # 이것도 config로 정리할 수 있을듯
+  Tokenizer_NAME = "klue/roberta-large"
   tokenizer = AutoTokenizer.from_pretrained(Tokenizer_NAME)
 
   ## load my model
-  MODEL_NAME = args.model_dir # model dir.
+  # MODEL_NAME = args.model_dir # model dir.
   model = AutoModelForSequenceClassification.from_pretrained(args.model_dir)
   model.to(device)
 
@@ -89,12 +116,9 @@ def main(args):
   pred_answer = num_to_label(pred_answer) # 숫자로 된 class를 원래 문자열 라벨로 변환.
   
   ## make csv file with predicted answer
-  #########################################################
-  # 아래 directory와 columns의 형태는 지켜주시기 바랍니다.
   output = pd.DataFrame({'id':test_id,'pred_label':pred_answer,'probs':output_prob,})
+  output.to_csv('./prediction/submission.csv', index=False)
 
-  output.to_csv('./prediction/submission.csv', index=False) # 최종적으로 완성된 예측한 라벨 csv 파일 형태로 저장.
-  #### 필수!! ##############################################
   print('---- Finish! ----')
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()
