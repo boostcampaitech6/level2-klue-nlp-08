@@ -10,6 +10,10 @@ from load_data import *
 import numpy as np
 import random
 
+from tokenizing import *
+from preprocessing import *
+import time
+
 # 시드 설정
 def set_seed(seed:int = 42):
     torch.manual_seed(seed)
@@ -113,13 +117,13 @@ def train():
 
   device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
-  print(device)
+  # print(device)
   # setting model hyperparameter
   model_config =  AutoConfig.from_pretrained(MODEL_NAME)
   model_config.num_labels = 30
 
   model =  AutoModelForSequenceClassification.from_pretrained(MODEL_NAME, config=model_config)
-  print(model.config)
+  # print(model.config)
   model.parameters
   model.to(device)
   
@@ -244,7 +248,8 @@ def train():
   set_seed(42)
   # load model and tokenizer
   # MODEL_NAME = "bert-base-uncased"
-  MODEL_NAME = "klue/bert-base"
+  MODEL_NAME = "klue/roberta-large"
+  # MODEL_NAME = 'klue/bert-base'
   tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 
   # load dataset
@@ -267,14 +272,14 @@ def train():
 
   device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
-  print(device)
+  # print(device)
   # setting model hyperparameter
   # 모델 구성 설정
   model_config =  AutoConfig.from_pretrained(MODEL_NAME)
   model_config.num_labels = 30
 
   model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME, config=model_config)
-  print(model.config)
+  # print(model.config)
   model.parameters
   model.to(device)
   
@@ -314,4 +319,13 @@ def main():
   train()
 
 if __name__ == '__main__':
+  start_time = time.time()
   main()
+  end_time = time.time()
+
+  # 실행 시간 계산 및 변환
+  execution_time = end_time - start_time
+  hours = execution_time // 3600
+  minutes = (execution_time % 3600) // 60
+  seconds = execution_time % 60
+  print("코드 실행 시간: {:.0f}시간 {:.0f}분 {:.2f}초".format(hours, minutes, seconds))
