@@ -1,4 +1,5 @@
 import sklearn
+import numpy as np
 from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_score
 
 def klue_re_micro_f1(preds, labels):
