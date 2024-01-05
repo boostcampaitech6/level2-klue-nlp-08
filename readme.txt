@@ -2,7 +2,7 @@
 
 download_from_GC.sh 실행 전에 해야 할것.
 먼저 구글 드라이브에서 다운로드받을 파일의 공유 옵션을 "링크가 있는 모든 사용자"로 하고 공유에서 링크 복사를 누른다.
-https://drive.google.com/file/d/이_부분이_파일_ID/view?usp=sharing
+https://drive.google.com/file/d/이_부분이_파일_ID/view?usp=sharing 이렇게 복사되는데 안의 파일 ID만 있으면 된다.
 아래 명령어를 순차적으로 실행한다.
 pip install gdown
 chmod +x download_from_GC.sh
