@@ -3,6 +3,9 @@
 구글 드라이브 공용 데이터 저장 폴더.
 https://drive.google.com/drive/folders/19fTYxwpJ6rIuSKcVWg1F77PYascRhA_6?usp=sharing
 
+구글 드라이브 공용 모델 저장 폴더.
+https://drive.google.com/drive/folders/1muMepSTJom6qv-9TxdFTBEzOnJxRrQhW?usp=sharing
+
 ********************************************************
 
 upload_to_GC.sh 실행 전에 해야 할것.
