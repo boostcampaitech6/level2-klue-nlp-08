@@ -16,6 +16,7 @@ def train():
     # Prepare dataset
     RE_train_dataset = RE_Dataset(data_path="./dataset/train/train_split_v1.csv", 
                                   tokenizer_name=MODEL_NAME)
+
     RE_valid_dataset = RE_Dataset(data_path="./dataset/valid/valid_split_v1.csv", 
                                   tokenizer_name=MODEL_NAME)
     
@@ -44,7 +45,7 @@ def train():
         eval_steps = 500,            # evaluation step.
         load_best_model_at_end = True 
     )
-    
+
     # Model Trainer
     trainer = Trainer(
         model=model,                         # the instantiated 🤗 Transformers model to be trained

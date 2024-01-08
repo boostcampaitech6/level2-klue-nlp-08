@@ -39,7 +39,7 @@ def tokenized_dataset_type_entity_marker(dataset, tokenizer):
                                                             f"[/O:{data['object_type']}]",
                                                             f"[S:{data['subject_type']}]",
                                                             f"[/S:{data['subject_type']}]"]}
-        num = tokenizer.add_special_tokens(special_tokens_dict, False)
+        tokenizer.add_special_tokens(special_tokens_dict)
         marked_sentence.append(mark_entities(data))
         
     tokenized_sentences = tokenizer(
@@ -50,9 +50,6 @@ def tokenized_dataset_type_entity_marker(dataset, tokenizer):
         max_length=128,
         add_special_tokens=True,
         )
-    
-    print(tokenized_sentences['input_ids'][0])
-    print(tokenizer.decode(tokenized_sentences['input_ids'][0]))
 
     return tokenized_sentences
 
