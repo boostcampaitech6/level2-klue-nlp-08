@@ -8,17 +8,43 @@ def preprocessing_dataset(dataset):
       dataset (DataFrame): raw 데이터셋
 
   Returns:
-      DataFrame: 'id', 'sentence', 'subject_entity', 'object_entity', 'label'를 반환한다.
+      DataFrame: 'id', 'sentence', 'subject_entity', 'object_entity', 'label', ...를 반환한다.
   '''
   subject_entity = []
+  subject_start_idx = []
+  subject_end_idx = []
+  subject_type = []
+
   object_entity = []
+  object_start_idx = []
+  object_end_idx = []
+  object_type = []
 
   for i,j in zip(dataset['subject_entity'], dataset['object_entity']):
     subject_dict, object_dict = eval(i), eval(j)
 
     subject_entity.append(subject_dict['word'])
-    object_entity.append(object_dict['word'])
+    subject_start_idx.append(subject_dict['start_idx'])
+    subject_end_idx.append(subject_dict['end_idx'])
+    subject_type.append(subject_dict['type'])
 
-  out_dataset = pd.DataFrame({'id':dataset['id'], 'sentence':dataset['sentence'],'subject_entity':subject_entity,'object_entity':object_entity,'label':dataset['label'],})
+    object_entity.append(object_dict['word'])
+    object_start_idx.append(object_dict['start_idx'])
+    object_end_idx.append(object_dict['end_idx'])
+    object_type.append(object_dict['type'])
+
+  out_dataset = pd.DataFrame({
+                  'id':dataset['id'], 
+                  'sentence':dataset['sentence'],
+                  'subject_entity':subject_entity,
+                  'subject_start_idx':subject_start_idx,
+                  'subject_end_idx':subject_end_idx,
+                  'subject_type':subject_type,
+                  'object_entity':object_entity,
+                  'object_start_idx':object_start_idx,
+                  'object_end_idx':object_end_idx,
+                  'object_type':object_type,
+                  'label':dataset['label'],
+                  })
   
   return out_dataset
