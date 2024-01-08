@@ -6,13 +6,13 @@ import numpy as np
 from transformers import AutoTokenizer, Trainer, TrainingArguments, RobertaConfig, RobertaTokenizer, RobertaForSequenceClassification, BertTokenizer
 import numpy as np
 import random
-from load_data import *
-from label_utils import *
-from metrics import compute_metrics
-from model import load_model
+from data_utils.load_data import *
+from data_utils.label_utils import *
+from data_utils.metrics import compute_metrics
+from model.model import load_model
 
-from tokenizing import *
-from preprocessing import *
+from preprocessing.tokenizing import *
+from preprocessing.preprocessing import *
 
 # 시드 설정
 def set_seed(seed:int = 42):
@@ -44,7 +44,7 @@ def train():
     # 시드 설정
     set_seed(42)
     # 모델, 토크나이저 가져오기
-    MODEL_NAME = "klue/bert-base"
+    MODEL_NAME = "klue/roberta-large"
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
 
     # load dataset

@@ -1,7 +1,7 @@
 from transformers import AutoTokenizer, AutoConfig, AutoModelForSequenceClassification, Trainer, TrainingArguments
 from torch.utils.data import DataLoader
-from load_data import *
-from label_utils import *
+from data_utils.load_data import *
+from data_utils.label_utils import *
 import pandas as pd
 import torch
 import torch.nn.functional as F
@@ -12,7 +12,7 @@ import argparse
 from tqdm import tqdm
 
 from train import set_seed
-from tokenizing import tokenized_dataset
+from preprocessing.tokenizing import tokenized_dataset
 
 def inference(model, tokenized_sent, device):
   '''

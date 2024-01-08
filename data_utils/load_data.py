@@ -3,7 +3,7 @@ import pickle as pickle
 import pandas as pd
 import torch
 
-from preprocessing import *
+from preprocessing.preprocessing import *
 
 class RE_Dataset(torch.utils.data.Dataset):
   '''
