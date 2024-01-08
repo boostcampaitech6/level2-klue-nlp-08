@@ -12,11 +12,9 @@ class RE_Dataset(torch.utils.data.Dataset):
     output : {input_ids:[tensor], attention_mask:[tensor], label:[tensor], type_id:[tensor]}
     '''
 
-    def __init__(self, data_path, tokenizer_name, train=True):
+    def __init__(self, data_path, tokenizer, train=True):
         self.dataset = load_data(data_path)        
-        self.pair_dataset = tokenized_dataset_type_entity_marker(
-                                self.dataset,
-                                AutoTokenizer.from_pretrained(tokenizer_name))
+        self.pair_dataset = tokenized_dataset_type_entity_marker(self.dataset, tokenizer)
 
         if train:
             self.labels = label_to_num(self.dataset['label'].values)

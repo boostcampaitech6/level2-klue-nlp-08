@@ -1,6 +1,6 @@
 import torch
 import pickle as pickle
-from transformers import Trainer, TrainingArguments
+from transformers import Trainer, TrainingArguments, AutoTokenizer
 
 from data.dataset import RE_Dataset
 from utils.utils import set_seed
@@ -13,16 +13,24 @@ def train():
     print('start training on :',device)
     MODEL_NAME = "klue/roberta-large"
 
+    tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
+    special_tokens_dict = {'additional_special_tokens': ['[/S:LOC]', '[S:LOC]', '[S:PER]', '[S:ORG]', 
+                                                         '[/S:PER]', '[/S:ORG]', '[/O:POH]', '[/O:LOC]', 
+                                                         '[/O:ORG]', '[O:POH]', '[/O:DAT]', '[/O:PER]', 
+                                                         '[O:ORG]', '[O:NOH]', '[/O:NOH]', '[O:PER]', 
+                                                         '[O:LOC]', '[O:DAT]']}
+    tokenizer.add_special_tokens(special_tokens_dict)
+    
     # Prepare dataset
     RE_train_dataset = RE_Dataset(data_path="./dataset/train/train_split_v1.csv", 
-                                  tokenizer_name=MODEL_NAME)
-
+                                  tokenizer=tokenizer)
     RE_valid_dataset = RE_Dataset(data_path="./dataset/valid/valid_split_v1.csv", 
-                                  tokenizer_name=MODEL_NAME)
+                                  tokenizer=tokenizer)
     
     # Load Model
     model = load_model(MODEL_NAME, num_labels=30)
     model.to(device)
+    model.resize_token_embeddings(len(tokenizer))
     print(model.config)
     
     # TrainingArguments setup
