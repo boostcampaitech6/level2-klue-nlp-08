@@ -6,7 +6,6 @@ import numpy as np
 
 def set_seed(seed:int = 42):
     '''실험 결과 재현을 위한 random seed를 설정'''
-
     torch.manual_seed(seed)
     torch.cuda.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)  # if use multi-GPU
@@ -27,7 +26,7 @@ def label_to_num(label):
     Returns:
         list: 라벨 목록에 해당하는 변환된 인덱스 값의 목록입니다.
     '''
-    
+
     num_label = []
     with open('dict_label_to_num.pkl', 'rb') as f:
         dict_label_to_num = pickle.load(f)

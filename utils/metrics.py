@@ -1,7 +1,5 @@
-import sklearn
 import numpy as np
-from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_score
-import numpy as np
+from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_score, precision_recall_curve, auc
 
 def klue_re_micro_f1(preds, labels):
     """
@@ -28,7 +26,8 @@ def klue_re_micro_f1(preds, labels):
     no_relation_label_idx = label_list.index("no_relation")
     label_indices = list(range(len(label_list)))
     label_indices.remove(no_relation_label_idx)
-    return sklearn.metrics.f1_score(labels, preds, average="micro", labels=label_indices) * 100.0
+    
+    return f1_score(labels, preds, average="micro", labels=label_indices) * 100.0
 
 # KLUE-RE task의 정밀도-재현율 곡선 아래 영역(AUPRC)을 계산한다.
 def klue_re_auprc(probs, labels):
@@ -48,8 +47,9 @@ def klue_re_auprc(probs, labels):
     for c in range(30):
         targets_c = labels.take([c], axis=1).ravel()
         preds_c = probs.take([c], axis=1).ravel()
-        precision, recall, _ = sklearn.metrics.precision_recall_curve(targets_c, preds_c)
-        score[c] = sklearn.metrics.auc(recall, precision)
+        precision, recall, _ = precision_recall_curve(targets_c, preds_c)
+        score[c] = auc(recall, precision)
+
     return np.average(score) * 100.0
 
 # F1 score, AUPRC를 위의 함수들을 통해 계산한다.

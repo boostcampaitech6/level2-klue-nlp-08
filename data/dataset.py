@@ -12,22 +12,27 @@ class RE_Dataset(torch.utils.data.Dataset):
     output : {input_ids:[tensor], attention_mask:[tensor], label:[tensor], type_id:[tensor]}
     '''
 
-    def __init__(self, data_path, tokenizer_name):
+    def __init__(self, data_path, tokenizer_name, train=True):
         self.dataset = load_data(data_path)        
         self.pair_dataset = tokenized_dataset(
                                 self.dataset,
                                 AutoTokenizer.from_pretrained(tokenizer_name))
 
-        self.labels = label_to_num(self.dataset['label'].values)
+        if train:
+            self.labels = label_to_num(self.dataset['label'].values)
+        else:
+            self.labels = list(map(int,self.dataset['label'].values))
 
     def __getitem__(self, idx):
         item = {key: val[idx].clone().detach() for key, val in self.pair_dataset.items()}
         item['labels'] = torch.tensor(self.labels[idx])
 
         return item
+    
+    def get_data_and_label(self):
+        return self.dataset['id'], self.pair_dataset, self.labels
 
     def __len__(self):
-
         return len(self.labels)
 
 
