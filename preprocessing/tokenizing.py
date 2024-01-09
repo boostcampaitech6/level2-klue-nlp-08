@@ -33,6 +33,26 @@ def mark_entities(data_series) -> str:
                s3 + f"[O:{o_type}] " + s4 + f" [/O:{o_type}] " + s5
     
 def tokenized_dataset_type_entity_marker(dataset, tokenizer):
+    """
+    mark_entities 함수를 사용해서 sentence에 speical token을 추가
+    결과들을 모아 marked_sentence 리스트를 반환
+    """
+    marked_sentence = []
+    for _, data in tqdm(dataset.iterrows(), desc="adding typed entity marker", total=len(dataset)):
+        marked_sentence.append(mark_entities(data))
+        
+    tokenized_sentences = tokenizer(
+        marked_sentence,
+        return_tensors="pt",
+        padding=True,
+        truncation=True,
+        max_length=128,
+        add_special_tokens=True,
+        )
+
+    return tokenized_sentences
+
+def tokenized_dataset_type_entity_marker_punct(dataset, tokenizer):
     marked_sentence = []
     for _, data in tqdm(dataset.iterrows(), desc="adding typed entity marker", total=len(dataset)):
         marked_sentence.append(mark_entities(data))
