@@ -4,7 +4,7 @@ import torch.nn.functional as F
 import pickle as pickle
 import numpy as np
 from tqdm import tqdm
-from transformers import AutoModelForSequenceClassification
+from transformers import AutoModelForSequenceClassification, AutoTokenizer
 from torch.utils.data import DataLoader
 
 from data.dataset import RE_Dataset
@@ -47,15 +47,24 @@ if __name__ == '__main__':
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
     MODEL_NAME = "klue/roberta-large"
-    model_dir = './results/checkpoint-1000/'
+    model_dir = './results/checkpoint-1500/'
     test_dataset_dir = "./dataset/test/test_data.csv"
     output_path = './submission.csv'
 
+    tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
+    special_tokens_dict = {'additional_special_tokens': ['[/S:LOC]', '[S:LOC]', '[S:PER]', '[S:ORG]', 
+                                                         '[/S:PER]', '[/S:ORG]', '[/O:POH]', '[/O:LOC]', 
+                                                         '[/O:ORG]', '[O:POH]', '[/O:DAT]', '[/O:PER]', 
+                                                         '[O:ORG]', '[O:NOH]', '[/O:NOH]', '[O:PER]', 
+                                                         '[O:LOC]', '[O:DAT]']}
+    tokenizer.add_special_tokens(special_tokens_dict)
+    
     model = AutoModelForSequenceClassification.from_pretrained(model_dir)
+    model.resize_token_embeddings(len(tokenizer))
     model.to(device)
 
     ## load test datset
-    Re_test_dataset = RE_Dataset(test_dataset_dir ,MODEL_NAME, train=False)
+    Re_test_dataset = RE_Dataset(test_dataset_dir ,tokenizer, train=False)
     test_id, _, _ = Re_test_dataset.get_data_and_label()
     
     ## predict answer

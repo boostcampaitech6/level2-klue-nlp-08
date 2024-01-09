@@ -35,11 +35,6 @@ def mark_entities(data_series) -> str:
 def tokenized_dataset_type_entity_marker(dataset, tokenizer):
     marked_sentence = []
     for _, data in tqdm(dataset.iterrows(), desc="adding typed entity marker", total=len(dataset)):
-        special_tokens_dict = {'additional_special_tokens': [f"[O:{data['object_type']}]",
-                                                            f"[/O:{data['object_type']}]",
-                                                            f"[S:{data['subject_type']}]",
-                                                            f"[/S:{data['subject_type']}]"]}
-        tokenizer.add_special_tokens(special_tokens_dict)
         marked_sentence.append(mark_entities(data))
         
     tokenized_sentences = tokenizer(
