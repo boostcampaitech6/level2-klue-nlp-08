@@ -1,11 +1,9 @@
 import torch
 import pandas as pd
 import pickle as pickle
-from transformers import AutoTokenizer
 
 from utils.utils import label_to_num
 from preprocessing.preprocessing import preprocessing_dataset
-from preprocessing.tokenizing import tokenized_dataset_type_entity_marker
 
 class RE_Dataset(torch.utils.data.Dataset):
     '''
@@ -14,7 +12,7 @@ class RE_Dataset(torch.utils.data.Dataset):
 
     def __init__(self, data_path, tokenizer, train=True):
         self.dataset = load_data(data_path)        
-        self.pair_dataset = tokenized_dataset_type_entity_marker(self.dataset, tokenizer)
+        self.pair_dataset = tokenizer.tokenize(self.dataset)
 
         if train:
             self.labels = label_to_num(self.dataset['label'].values)
@@ -24,7 +22,7 @@ class RE_Dataset(torch.utils.data.Dataset):
     def __getitem__(self, idx):
         item = {key: val[idx].clone().detach() for key, val in self.pair_dataset.items()}
         item['labels'] = torch.tensor(self.labels[idx])
-
+        
         return item
     
     def get_data_and_label(self):

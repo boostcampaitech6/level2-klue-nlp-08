@@ -9,6 +9,7 @@ from torch.utils.data import DataLoader
 
 from data.dataset import RE_Dataset
 from utils.utils import set_seed, num_to_label
+from preprocessing.tokenizer import TypedEntityMarkerTokenizer, TypedEntityMarkerPuncTokenizer
 
 def inference(model, tokenized_sent, device):
     '''
@@ -51,16 +52,9 @@ if __name__ == '__main__':
     test_dataset_dir = "./dataset/test/test_data.csv"
     output_path = './submission.csv'
 
-    tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
-    special_tokens_dict = {'additional_special_tokens': ['[/S:LOC]', '[S:LOC]', '[S:PER]', '[S:ORG]', 
-                                                         '[/S:PER]', '[/S:ORG]', '[/O:POH]', '[/O:LOC]', 
-                                                         '[/O:ORG]', '[O:POH]', '[/O:DAT]', '[/O:PER]', 
-                                                         '[O:ORG]', '[O:NOH]', '[/O:NOH]', '[O:PER]', 
-                                                         '[O:LOC]', '[O:DAT]']}
-    tokenizer.add_special_tokens(special_tokens_dict)
-    
+    tokenizer = TypedEntityMarkerPuncTokenizer(MODEL_NAME)
     model = AutoModelForSequenceClassification.from_pretrained(model_dir)
-    model.resize_token_embeddings(len(tokenizer))
+    model.resize_token_embeddings(len(tokenizer.tokenizer))
     model.to(device)
 
     ## load test datset
