@@ -1,11 +1,12 @@
 import torch
 import pickle as pickle
-from transformers import Trainer, TrainingArguments, AutoTokenizer
+from transformers import Trainer, TrainingArguments
 
 from data.dataset import RE_Dataset
 from utils.utils import set_seed
 from model.model import load_model
 from utils.metrics import compute_metrics
+from preprocessing.tokenizer import TypedEntityMarkerTokenizer, TypedEntityMarkerPuncTokenizer
 
 from torch import nn
 import torch.nn.functional as F
@@ -30,13 +31,7 @@ def train():
     print('start training on :',device)
     MODEL_NAME = "klue/roberta-large"
 
-    tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
-    special_tokens_dict = {'additional_special_tokens': ['[/S:LOC]', '[S:LOC]', '[S:PER]', '[S:ORG]', '[/S:PER]', 
-                                                         '[/S:ORG]', '[/O:POH]', '[/O:LOC]', '[/O:ORG]', '[O:POH]', 
-                                                         '[/O:DAT]', '[/O:PER]', '[O:ORG]', '[O:NOH]', '[/O:NOH]', 
-                                                         '[O:PER]', '[O:LOC]', '[O:DAT]']}
-    tokenizer.add_special_tokens(special_tokens_dict)
-    
+    tokenizer = TypedEntityMarkerPuncTokenizer(MODEL_NAME)
     # Prepare dataset
     RE_train_dataset = RE_Dataset(data_path="./dataset/train/train_split_v1.csv", 
                                   tokenizer=tokenizer)
@@ -46,7 +41,7 @@ def train():
     # Load Model
     model = load_model(MODEL_NAME, num_labels=30)
     model.to(device)
-    model.resize_token_embeddings(len(tokenizer))
+    model.resize_token_embeddings(len(tokenizer.tokenizer))
     print(model.config)
     
     # TrainingArguments setup
@@ -55,11 +50,11 @@ def train():
         save_total_limit=5,              # number of total save model.
         save_steps=500,                 # model saving step.
         num_train_epochs=20,              # total number of training epochs
-        learning_rate=5e-5,               # learning_rate
+        learning_rate=2e-5,               # learning_rate
         per_device_train_batch_size=64,  # batch size per device during training
         per_device_eval_batch_size=64,   # batch size for evaluation
         warmup_steps=500,                # number of warmup steps for learning rate scheduler
-        weight_decay=0.01,               # strength of weight decay
+        weight_decay=0.05,               # strength of weight decay
         logging_dir='./logs',            # directory for storing logs
         logging_steps=100,              # log saving step.
         evaluation_strategy='steps', # evaluation strategy to adopt during training

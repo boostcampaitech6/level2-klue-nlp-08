@@ -124,3 +124,4 @@ def tokenized_dataset_concat_entity(dataset, tokenizer):
         add_special_tokens=True,)
     
     return tokenized_sentences
+
