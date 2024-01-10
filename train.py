@@ -67,7 +67,7 @@ def train():
     )
 
     # Model Trainer
-    trainer = CustomTrainer(
+    trainer = CustomTrainer(    # custom trainer 안쓰고 싶으면 CustomTrainer -> Trainer 로 변경
         model=model,                         # the instantiated 🤗 Transformers model to be trained
         args=training_args,                  # training arguments, defined above
         train_dataset=RE_train_dataset,         # training dataset
