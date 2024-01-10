@@ -7,24 +7,40 @@ from utils.utils import set_seed
 from model.model import load_model
 from utils.metrics import compute_metrics
 
+from torch import nn
+import torch.nn.functional as F
+
+# focal loss
+class CustomTrainer(Trainer):
+    def compute_loss(self, model, inputs, return_outputs=False):
+        labels = inputs.pop("labels")
+        outputs = model(**inputs)
+        # loss = FocalLoss(outputs[0], labels)
+        log_prob = F.log_softmax(outputs[0], dim=-1)
+        prob = torch.exp(log_prob)
+        gamma = 2
+        loss = F.nll_loss(
+            ((1 - prob) ** gamma) * log_prob,
+            labels)
+        return (loss, outputs) if return_outputs else loss
+    
 def train():
     set_seed(42)        
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     print('start training on :',device)
-    MODEL_NAME = "klue/roberta-large"
+    MODEL_NAME = "klue/roberta-base"
 
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
-    special_tokens_dict = {'additional_special_tokens': ['[/S:LOC]', '[S:LOC]', '[S:PER]', '[S:ORG]', 
-                                                         '[/S:PER]', '[/S:ORG]', '[/O:POH]', '[/O:LOC]', 
-                                                         '[/O:ORG]', '[O:POH]', '[/O:DAT]', '[/O:PER]', 
-                                                         '[O:ORG]', '[O:NOH]', '[/O:NOH]', '[O:PER]', 
-                                                         '[O:LOC]', '[O:DAT]']}
+    special_tokens_dict = {'additional_special_tokens': ['[/S:LOC]', '[S:LOC]', '[S:PER]', '[S:ORG]', '[/S:PER]', 
+                                                         '[/S:ORG]', '[/O:POH]', '[/O:LOC]', '[/O:ORG]', '[O:POH]', 
+                                                         '[/O:DAT]', '[/O:PER]', '[O:ORG]', '[O:NOH]', '[/O:NOH]', 
+                                                         '[O:PER]', '[O:LOC]', '[O:DAT]']}
     tokenizer.add_special_tokens(special_tokens_dict)
     
     # Prepare dataset
     RE_train_dataset = RE_Dataset(data_path="./dataset/train/train_split_v1.csv", 
                                   tokenizer=tokenizer)
-    RE_valid_dataset = RE_Dataset(data_path="./dataset/valid/valid_split_v1.csv", 
+    RE_valid_dataset = RE_Dataset(data_path="./dataset/train/valid_split_v1.csv", 
                                   tokenizer=tokenizer)
     
     # Load Model
@@ -35,7 +51,7 @@ def train():
     
     # TrainingArguments setup
     training_args = TrainingArguments(
-        output_dir='./results',          # output directory
+        output_dir='./results/roberta-base1-focal',          # output directory
         save_total_limit=5,              # number of total save model.
         save_steps=500,                 # model saving step.
         num_train_epochs=20,              # total number of training epochs
@@ -51,11 +67,12 @@ def train():
                                     # `steps`: Evaluate every `eval_steps`.
                                     # `epoch`: Evaluate every end of epoch.
         eval_steps = 500,            # evaluation step.
-        load_best_model_at_end = True 
+        load_best_model_at_end = True,
+        metric_for_best_model='micro f1 score'
     )
 
     # Model Trainer
-    trainer = Trainer(
+    trainer = CustomTrainer(
         model=model,                         # the instantiated 🤗 Transformers model to be trained
         args=training_args,                  # training arguments, defined above
         train_dataset=RE_train_dataset,         # training dataset
