@@ -5,31 +5,14 @@ from transformers import Trainer, TrainingArguments
 from data.dataset import RE_Dataset
 from utils.utils import set_seed
 from model.model import load_model
-from utils.metrics import compute_metrics
 from preprocessing.tokenizer import TypedEntityMarkerTokenizer, TypedEntityMarkerPuncTokenizer
-
-from torch import nn
-import torch.nn.functional as F
-
-# focal loss
-class CustomTrainer(Trainer):
-    def compute_loss(self, model, inputs, return_outputs=False):
-        labels = inputs.pop("labels")
-        outputs = model(**inputs)
-        # loss = FocalLoss(outputs[0], labels)
-        log_prob = F.log_softmax(outputs[0], dim=-1)
-        prob = torch.exp(log_prob)
-        gamma = 2
-        loss = F.nll_loss(
-            ((1 - prob) ** gamma) * log_prob,
-            labels)
-        return (loss, outputs) if return_outputs else loss
+from model.model_type import train_model
     
 def train():
     set_seed(42)        
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     print('start training on :',device)
-    MODEL_NAME = "klue/roberta-large"
+    MODEL_NAME = "klue/roberta-base"
 
     tokenizer = TypedEntityMarkerPuncTokenizer(MODEL_NAME)
     # Prepare dataset
@@ -46,7 +29,7 @@ def train():
     
     # TrainingArguments setup
     training_args = TrainingArguments(
-        output_dir='./results/roberta-large-focal',          # output directory
+        output_dir='./results/roberta-base3-focal',          # output directory
         save_total_limit=5,              # number of total save model.
         save_steps=500,                 # model saving step.
         num_train_epochs=20,              # total number of training epochs
@@ -66,15 +49,11 @@ def train():
         metric_for_best_model='micro f1 score'
     )
 
-    # Model Trainer
-    trainer = CustomTrainer(    # custom trainer 안쓰고 싶으면 CustomTrainer -> Trainer 로 변경
-        model=model,                         # the instantiated 🤗 Transformers model to be trained
-        args=training_args,                  # training arguments, defined above
-        train_dataset=RE_train_dataset,         # training dataset
-        eval_dataset=RE_valid_dataset,             # evaluation dataset
-        compute_metrics=compute_metrics         # define metrics function
-    )
-
+    trainer = train_model(m_type = 'none',    # 'none'하면 기존 모델 'focal_loss'하면 focal loss ftn이 적용된 모델
+                          model=model, 
+                          training_args=training_args, 
+                          train_dataset=RE_train_dataset, 
+                          eval_dataset= RE_valid_dataset).model_type()
     # train start
     trainer.train()
     model.save_pretrained('./best_model')
