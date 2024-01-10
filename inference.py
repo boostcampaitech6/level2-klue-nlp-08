@@ -46,17 +46,18 @@ if __name__ == '__main__':
     set_seed(42)
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
-    MODEL_NAME = "klue/roberta-large"
-    model_dir = './results/checkpoint-1500/'
+    MODEL_NAME = "klue/roberta-base"
+    # model_dir = './results/roberta-base1-focal/checkpoint-9000/'
+    model_dir = './best_model/'
     test_dataset_dir = "./dataset/test/test_data.csv"
-    output_path = './submission.csv'
+    output_path = f'./prediction/submission-focal-best.csv'
 
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
-    special_tokens_dict = {'additional_special_tokens': ['[/S:LOC]', '[S:LOC]', '[S:PER]', '[S:ORG]', 
-                                                         '[/S:PER]', '[/S:ORG]', '[/O:POH]', '[/O:LOC]', 
-                                                         '[/O:ORG]', '[O:POH]', '[/O:DAT]', '[/O:PER]', 
-                                                         '[O:ORG]', '[O:NOH]', '[/O:NOH]', '[O:PER]', 
-                                                         '[O:LOC]', '[O:DAT]']}
+    # special_tokens_dict = {'additional_special_tokens': ['[LOC]', '[PER]', '[ORG]', '[POH]', '[DAT]', '[NOH]', '∴','∵']}
+    special_tokens_dict = {'additional_special_tokens': ['[/S:LOC]', '[S:LOC]', '[S:PER]', '[S:ORG]', '[/S:PER]', 
+                                                         '[/S:ORG]', '[/O:POH]', '[/O:LOC]', '[/O:ORG]', '[O:POH]', 
+                                                         '[/O:DAT]', '[/O:PER]', '[O:ORG]', '[O:NOH]', '[/O:NOH]', 
+                                                         '[O:PER]', '[O:LOC]', '[O:DAT]']}
     tokenizer.add_special_tokens(special_tokens_dict)
     
     model = AutoModelForSequenceClassification.from_pretrained(model_dir)

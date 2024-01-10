@@ -1,5 +1,37 @@
 from tqdm import tqdm
 
+# def mark_entities(data_series) -> str:
+#     """
+#     data_series 에서 entity 의 시작 인덱스, 끝 인덱스와 타입을 추출하고,
+#     추출한 정보를 바탕으로 typed entity marker 가 추가된 문장을 반환한다.
+#     """
+#     sentence = data_series['sentence']
+#     o_start = int(data_series['object_start_idx'])
+#     o_end = int(data_series['object_end_idx'])
+#     o_type = data_series['object_type']
+#     s_start = int(data_series['subject_start_idx'])
+#     s_end = int(data_series['subject_end_idx'])
+#     s_type = data_series['subject_type']
+
+#     if o_start < s_start:
+#         s1 = sentence[:o_start]
+#         s2 = sentence[o_start:o_end+1]
+#         s3 = sentence[o_end+1:s_start]
+#         s4 = sentence[s_start:s_end+1]
+#         s5 = sentence[s_end+1:]
+
+#         return s1 + f"∴ [{o_type}] " + s2 + f" ∴ " + \
+#                s3 + f"∵ [{s_type}] " + s4 + f" ∵ " + s5
+#     else:
+#         s1 = sentence[:s_start]
+#         s2 = sentence[s_start:s_end+1]
+#         s3 = sentence[s_end+1 :o_start]
+#         s4 = sentence[o_start:o_end+1]
+#         s5 = sentence[o_end+1:]
+
+#         return s1 + f"∵ [{s_type}]" + s2 + f" ∵ " + \
+#                s3 + f"∴ [{o_type}] " + s4 + f" ∴ " + s5
+
 def mark_entities(data_series) -> str:
     """
     data_series 에서 entity 의 시작 인덱스, 끝 인덱스와 타입을 추출하고,

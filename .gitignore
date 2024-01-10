@@ -165,3 +165,7 @@ cython_debug/
 
 best_model/
 datasets/
+results/
+wandb/
+test.ipynb
+prediction/

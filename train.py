@@ -28,7 +28,7 @@ def train():
     set_seed(42)        
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     print('start training on :',device)
-    MODEL_NAME = "klue/roberta-base"
+    MODEL_NAME = "klue/roberta-large"
 
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
     special_tokens_dict = {'additional_special_tokens': ['[/S:LOC]', '[S:LOC]', '[S:PER]', '[S:ORG]', '[/S:PER]', 
@@ -51,7 +51,7 @@ def train():
     
     # TrainingArguments setup
     training_args = TrainingArguments(
-        output_dir='./results/roberta-base1-focal',          # output directory
+        output_dir='./results/roberta-large-focal',          # output directory
         save_total_limit=5,              # number of total save model.
         save_steps=500,                 # model saving step.
         num_train_epochs=20,              # total number of training epochs
