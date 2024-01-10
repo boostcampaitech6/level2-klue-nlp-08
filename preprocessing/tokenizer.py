@@ -2,13 +2,19 @@ from tqdm import tqdm
 from transformers import AutoTokenizer
     
 class TypedEntityMarkerPuncTokenizer():
-    def __init__(self, tokenizer_name):
+    def __init__(self, tokenizer_name, add_query=False):
         self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
+        self.add_query = add_query
         self.type2word = {"ORG": "단체", "PER": "사람", "DAT": "날짜", 
                           "LOC": "위치", "POH": "기타", "NOH": "수량"}
 
     def mark_entities(self, data_series) -> str:
-        ''' @ ⊙ 사람 ⊙ 이순신 @ 장군은 # ^ 시대 ^ 조선 # 출신 이다 '''
+        ''' 
+        if add_query == True
+            @ ⊙ 사람 ⊙ 이순신 @ 과 # ^ 시대 ^ 조선 # 의 관계는 무엇인가? @ ⊙ 사람 ⊙ 이순신 @ 장군은 # ^ 시대 ^ 조선 # 출신 이다 
+        else:
+            @ ⊙ 사람 ⊙ 이순신 @ 장군은 # ^ 시대 ^ 조선 # 출신 이다 
+        '''
 
         sentence = data_series['sentence']
         o_start = int(data_series['object_start_idx'])
@@ -17,7 +23,7 @@ class TypedEntityMarkerPuncTokenizer():
         s_start = int(data_series['subject_start_idx'])
         s_end = int(data_series['subject_end_idx'])
         s_type = data_series['subject_type']
-
+        
         if o_start < s_start:
             s1 = sentence[:o_start]
             s2 = sentence[o_start:o_end+1]
@@ -25,17 +31,29 @@ class TypedEntityMarkerPuncTokenizer():
             s4 = sentence[s_start:s_end+1]
             s5 = sentence[s_end+1:]
 
-            return s1 + f"@ ⊙ {self.type2word[o_type]} ⊙ " + s2 + " @ " + \
-                s3 + f"# ^ {self.type2word[s_type]} ^ " + s4 + f" # " + s5
+            if self.add_query:
+                return f"@ ⊙ {self.type2word[o_type]} ⊙ " + s2 + " @ 과" + \
+                    f"# ^ {self.type2word[s_type]} ^ " + s4 + f" # 사이의 관계는 무엇인가? " + \
+                    s1 + f"@ ⊙ {self.type2word[o_type]} ⊙ " + s2 + " @ " + \
+                    s3 + f"# ^ {self.type2word[s_type]} ^ " + s4 + f" # " + s5
+            else:
+                return s1 + f"@ ⊙ {self.type2word[o_type]} ⊙ " + s2 + " @ " + \
+                    s3 + f"# ^ {self.type2word[s_type]} ^ " + s4 + f" # " + s5
         else:
             s1 = sentence[:s_start]
             s2 = sentence[s_start:s_end+1]
             s3 = sentence[s_end+1 :o_start]
             s4 = sentence[o_start:o_end+1]
             s5 = sentence[o_end+1:]
-
-            return s1 + f"# ^ {self.type2word[s_type]} ^ " + s2 + " # " + \
-                s3 + f"@ ⊙ {self.type2word[o_type]} ⊙ " + s4 + f" @ " + s5
+            
+            if self.add_query:
+                return f"# ^ {self.type2word[s_type]} ^ " + s2 + " # 과" + \
+                    f"@ ⊙ {self.type2word[o_type]} ⊙ " + s4 + f" @ 사이의 관계는 무엇인가? " + \
+                    s1 + f"# ^ {self.type2word[s_type]} ^ " + s2 + " # " + \
+                    s3 + f"@ ⊙ {self.type2word[o_type]} ⊙ " + s4 + f" @ " + s5
+            else:
+                return s1 + f"# ^ {self.type2word[s_type]} ^ " + s2 + " # " + \
+                    s3 + f"@ ⊙ {self.type2word[o_type]} ⊙ " + s4 + f" @ " + s5
         
     def tokenize(self, dataset):
         marked_sentence = []
