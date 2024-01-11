@@ -1,11 +1,16 @@
-training_args:
+train_config:
+    model_name: klue/roberta-large  # 사전 훈련된 모델 이름
+    train_dataset_path: ./dataset/train/train_split_v1.csv  # 훈련 데이터셋 파일 위치
+    valid_dataset_path: ./dataset/train/train_split_v1.csv
+
+train_args:
     output_dir: ./results  # 출력 디렉토리
     save_total_limit: 5  # 저장된 총 모델 수 제한
     save_steps: 500  # 모델 저장 간격
     num_train_epochs: 20  # 총 훈련 에폭 수
     learning_rate: 0.00005  # 학습률
-    per_device_train_batch_size: 16  # 훈련 중 각 장치당 배치 크기
-    per_device_eval_batch_size: 16  # 평가용 배치 크기
+    per_device_train_batch_size: 128  # 훈련 중 각 장치당 배치 크기
+    per_device_eval_batch_size: 128  # 평가용 배치 크기
     warmup_steps: 500  # 학습률 스케줄러의 워머업 스텝 수
     weight_decay: 0.01  # 가중치 감소의 강도
     logging_dir: ./logs  # 로그 저장 디렉토리
@@ -13,30 +18,25 @@ training_args:
     evaluation_strategy: steps  # 훈련 중 채택할 평가 전략
     eval_steps: 500  # 평가 간격
     load_best_model_at_end: True  # 훈련 종료 시 최상의 모델 로드 여부
+    metric_for_best_model: micro f1 score
 
-training_args_wandb:
+train_args_wandb:
     output_dir: ./results # 출력 디렉토리
     save_total_limit: 5 # 전체 모델 저장 제한
-    save_steps: 40 # 모델 저장 간격
-    num_train_epochs: 3 # 총 훈련 에폭 수
+    save_steps: 500 # 모델 저장 간격
+    num_train_epochs: 20 # 총 훈련 에폭 수
     learning_rate: wandb.config.lr # 학습률 (wandb.config에서 가져옴)
     per_device_train_batch_size: wandb.config.batch_size # 디바이스당 훈련 배치 크기 (wandb.config에서 가져옴)
-    per_device_eval_batch_size: 16 # 평가용 배치 크기
-    warmup_steps: 5 # 학습률 스케줄러의 워마업 스텝 수
+    per_device_eval_batch_size: 128 # 평가용 배치 크기
+    warmup_steps: 005 # 학습률 스케줄러의 워마업 스텝 수
     weight_decay: 0.01 # 가중치 감소 강도
     logging_dir: ./logs # 로그 저장 디렉토리
-    logging_steps: 20 # 로그 저장 간격
+    logging_steps: 100 # 로그 저장 간격
     evaluation_strategy: steps # 훈련 중 채택할 평가 전략
-    eval_steps: 20 # 평가 간격
-    load_best_model_at_end: true # 훈련 종료 시 최상의 모델 로드 여부
+    eval_steps: 500 # 평가 간격
+    load_best_model_at_end: True # 훈련 종료 시 최상의 모델 로드 여부
     report_to: wandb # wandb에 보고 여부
 
 inference_config:
     batch_size: 8  # 추론 배치 크기
-    tokenizer_name: "klue/roberta-large"  # 토크나이저 이름
     model_dir: "./saved_models"  # 모델 디렉토리
-
-additional_config:
-    model_name: klue/roberta-large  # 사전 훈련된 모델 이름
-    train_dataset_location: ../dataset/train/train.csv  # 훈련 데이터셋 파일 위치
-    num_labels: 30  # 레이블 수
