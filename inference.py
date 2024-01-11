@@ -47,10 +47,10 @@ if __name__ == '__main__':
     set_seed(42)
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
-    MODEL_NAME = "klue/roberta-large"
-    model_dir = './results/checkpoint-1500/'
+    MODEL_NAME = "klue/roberta-base"
+    model_dir = './results/roberta-base2-focal/checkpoint-9000'
     test_dataset_dir = "./dataset/test/test_data.csv"
-    output_path = './submission.csv'
+    output_path = './prediction/submission-roberta-base2-focal.csv'
 
     tokenizer = TypedEntityMarkerPuncTokenizer(MODEL_NAME)
     model = AutoModelForSequenceClassification.from_pretrained(model_dir)
@@ -68,4 +68,3 @@ if __name__ == '__main__':
     ## make csv file with predicted answer
     output = pd.DataFrame({'id':test_id,'pred_label':pred_answer,'probs':output_prob,})
     output.to_csv(output_path, index=False)
-    
