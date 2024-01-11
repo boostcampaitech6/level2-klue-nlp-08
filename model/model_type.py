@@ -1,14 +1,13 @@
-from transformers import Trainer
+from transformers import Trainer, EarlyStoppingCallback
 from utils.metrics import compute_metrics
 import torch.nn.functional as F
 import torch
 
 # focal loss
-class CustomTrainer(Trainer):
+class FocalLoss(Trainer):
     def compute_loss(self, model, inputs, return_outputs=False):
         labels = inputs.pop("labels")
         outputs = model(**inputs)
-        # loss = FocalLoss(outputs[0], labels)
         log_prob = F.log_softmax(outputs[0], dim=-1)
         prob = torch.exp(log_prob)
         gamma = 2
@@ -29,7 +28,15 @@ class train_model():
 
     def model_type(self):
         if self.m_type == 'none':
-            return Trainer(    # custom trainer 안쓰고 싶으면 CustomTrainer -> Trainer 로 변경
+            return Trainer(    
+                model=self.model,                         # the instantiated 🤗 Transformers model to be trained
+                args=self.training_args,                  # training arguments, defined above
+                train_dataset=self.train_dataset,         # training dataset
+                eval_dataset=self.eval_dataset,             # evaluation dataset
+                compute_metrics=compute_metrics         # define metrics function
+            )
+        if self.m_type == 'none-early_stopping':
+            return Trainer(    
                 model=self.model,                         # the instantiated 🤗 Transformers model to be trained
                 args=self.training_args,                  # training arguments, defined above
                 train_dataset=self.train_dataset,         # training dataset
@@ -37,10 +44,19 @@ class train_model():
                 compute_metrics=compute_metrics         # define metrics function
             )
         if self.m_type == 'focal_loss':
-            return CustomTrainer(    # custom trainer 안쓰고 싶으면 CustomTrainer -> Trainer 로 변경
+            return FocalLoss(    
                 model=self.model,                         # the instantiated 🤗 Transformers model to be trained
                 args=self.training_args,                  # training arguments, defined above
                 train_dataset=self.train_dataset,         # training dataset
                 eval_dataset=self.eval_dataset,             # evaluation dataset
                 compute_metrics=compute_metrics         # define metrics function
+            )
+        if self.m_type == 'focal_loss-early_stopping':
+            return FocalLoss(    
+                model=self.model,                         # the instantiated 🤗 Transformers model to be trained
+                args=self.training_args,                  # training arguments, defined above
+                train_dataset=self.train_dataset,         # training dataset
+                eval_dataset=self.eval_dataset,             # evaluation dataset
+                compute_metrics=compute_metrics,         # define metrics function,
+                callbacks=[EarlyStoppingCallback(early_stopping_patience=3)]
             )

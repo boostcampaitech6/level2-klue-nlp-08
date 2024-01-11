@@ -29,15 +29,15 @@ def train():
     
     # TrainingArguments setup
     training_args = TrainingArguments(
-        output_dir='./results/roberta-base3-focal',          # output directory
+        output_dir='./results/roberta-base-focal-128-0.01-2e-5',          # output directory
         save_total_limit=5,              # number of total save model.
         save_steps=500,                 # model saving step.
-        num_train_epochs=20,              # total number of training epochs
+        num_train_epochs=30,              # total number of training epochs
         learning_rate=2e-5,               # learning_rate
-        per_device_train_batch_size=64,  # batch size per device during training
-        per_device_eval_batch_size=64,   # batch size for evaluation
+        per_device_train_batch_size=128,  # batch size per device during training
+        per_device_eval_batch_size=128,   # batch size for evaluation
         warmup_steps=500,                # number of warmup steps for learning rate scheduler
-        weight_decay=0.05,               # strength of weight decay
+        weight_decay=0.01,               # strength of weight decay
         logging_dir='./logs',            # directory for storing logs
         logging_steps=100,              # log saving step.
         evaluation_strategy='steps', # evaluation strategy to adopt during training
@@ -49,14 +49,14 @@ def train():
         metric_for_best_model='micro f1 score'
     )
 
-    trainer = train_model(m_type = 'none',    # 'none'하면 기존 모델 'focal_loss'하면 focal loss ftn이 적용된 모델
+    trainer = train_model(m_type = 'focal_loss',    # 'none', 'none-ealry_stopping', 'focal_loss', 'focal_loss-early_stopping'
                           model=model, 
                           training_args=training_args, 
                           train_dataset=RE_train_dataset, 
                           eval_dataset= RE_valid_dataset).model_type()
     # train start
     trainer.train()
-    model.save_pretrained('./best_model')
+    model.save_pretrained('./best_model/roberta-base-focal-128-0.01-2e-5')
     
 if __name__ == '__main__':
     train()
