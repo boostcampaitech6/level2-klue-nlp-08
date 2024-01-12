@@ -2,26 +2,16 @@ import pickle as pickle
 import os
 import pandas as pd
 import torch
+from transformers import Trainer, TrainingArguments
 import numpy as np
-from transformers import AutoTokenizer, Trainer, TrainingArguments, RobertaConfig, RobertaTokenizer, RobertaForSequenceClassification, BertTokenizer
-import numpy as np
-import random
+
 from data.dataset import RE_Dataset
 from utils.metrics import compute_metrics
+from utils.utils import set_seed
 from model.model import load_model
 from preprocessing.tokenizer import TypedEntityMarkerPuncTokenizer
 
 import wandb
-
-# 시드 설정
-def set_seed(seed:int = 42):
-    torch.manual_seed(seed)
-    torch.cuda.manual_seed(seed)
-    torch.cuda.manual_seed_all(seed)  # if use multi-GPU
-    torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark = False
-    np.random.seed(seed)
-    random.seed(seed)
 
 def train():
     """
