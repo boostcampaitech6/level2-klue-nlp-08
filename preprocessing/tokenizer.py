@@ -47,7 +47,7 @@ class TypedEntityMarkerPuncTokenizer():
             s4 = sentence[o_start:o_end+1]
             s5 = sentence[o_end+1:]
             query = f"# ^ {self.type2word[s_type]} ^ " + s2 + " # 과" + \
-                    f"@ ⊙ {self.type2word[o_type]} ⊙ " + s4 + f" @ 사이의 관계는 무엇인가? "
+                    f"@ ⊙ {self.type2word[o_type]} ⊙ " + s4 + f" @ 사이의 관계는 무엇인가?"
             answer = s1 + f"# ^ {self.type2word[s_type]} ^ " + s2 + " # " + \
                 s3 + f"@ ⊙ {self.type2word[o_type]} ⊙ " + s4 + f" @ " + s5
             
