@@ -1,42 +1,59 @@
 train_config:
-    model_name: klue/roberta-large  # 사전 훈련된 모델 이름
+    model_name: studio-ousia/mluke-large  # 사전 훈련된 모델 이름
+    model_save_name: mluke-large-focal-query-0.05 # wandb 에 사용할 모델 이름
+    add_query: True # TypedEntityMarkerPuncTokenizer 에서 add_query 사용할지 여부
     train_dataset_path: ./dataset/train/train_split_v1.csv  # 훈련 데이터셋 파일 위치
-    valid_dataset_path: ./dataset/train/train_split_v1.csv
+    valid_dataset_path: ./dataset/train/valid_split_v1.csv # 평가 데이터셋 파일 위치
 
 train_args:
-    output_dir: ./results  # 출력 디렉토리
-    save_total_limit: 5  # 저장된 총 모델 수 제한
-    save_steps: 500  # 모델 저장 간격
+    output_dir: ./results/mluke-large-query/  # 출력 디렉토리
+    save_total_limit: 1  # 저장된 총 모델 수 제한
+    save_steps: 600  # 모델 저장 간격
     num_train_epochs: 20  # 총 훈련 에폭 수
-    learning_rate: 0.00005  # 학습률
-    per_device_train_batch_size: 128  # 훈련 중 각 장치당 배치 크기
-    per_device_eval_batch_size: 128  # 평가용 배치 크기
+    learning_rate: 0.00002  # 학습률
+    per_device_train_batch_size: 64  # 훈련 중 각 장치당 배치 크기
+    per_device_eval_batch_size: 64  # 평가용 배치 크기
     warmup_steps: 500  # 학습률 스케줄러의 워머업 스텝 수
-    weight_decay: 0.01  # 가중치 감소의 강도
+    weight_decay: 0.05  # 가중치 감소의 강도
     logging_dir: ./logs  # 로그 저장 디렉토리
     logging_steps: 100  # 로그 저장 간격
     evaluation_strategy: steps  # 훈련 중 채택할 평가 전략
-    eval_steps: 500  # 평가 간격
+    eval_steps: 200  # 평가 간격
     load_best_model_at_end: True  # 훈련 종료 시 최상의 모델 로드 여부
     metric_for_best_model: micro f1 score
 
 train_args_wandb:
-    output_dir: ./results # 출력 디렉토리
+    output_dir: ./results/sweep/koelectra # 출력 디렉토리
     save_total_limit: 5 # 전체 모델 저장 제한
     save_steps: 500 # 모델 저장 간격
     num_train_epochs: 20 # 총 훈련 에폭 수
-    learning_rate: wandb.config.lr # 학습률 (wandb.config에서 가져옴)
-    per_device_train_batch_size: wandb.config.batch_size # 디바이스당 훈련 배치 크기 (wandb.config에서 가져옴)
     per_device_eval_batch_size: 128 # 평가용 배치 크기
-    warmup_steps: 005 # 학습률 스케줄러의 워마업 스텝 수
+    warmup_steps: 500 # 학습률 스케줄러의 워마업 스텝 수
     weight_decay: 0.01 # 가중치 감소 강도
     logging_dir: ./logs # 로그 저장 디렉토리
     logging_steps: 100 # 로그 저장 간격
     evaluation_strategy: steps # 훈련 중 채택할 평가 전략
-    eval_steps: 500 # 평가 간격
+    eval_steps: 100 # 평가 간격
     load_best_model_at_end: True # 훈련 종료 시 최상의 모델 로드 여부
+    metric_for_best_model: micro f1 score
     report_to: wandb # wandb에 보고 여부
 
 inference_config:
-    batch_size: 8  # 추론 배치 크기
-    model_dir: "./saved_models"  # 모델 디렉토리
+    model_dir: ./best_model/mluke-large-focal-64-30-0.00002  # 모델 디렉토리
+    tokenizer_name: studio-ousia/mluke-large # 토크나이저 이름
+    test_dataset_path: ./dataset/test/test_data.csv # 테스트 데이터셋 파일 위치
+    output_path: ./prediction/mluke-large-focal.csv # 예측 결과 파일 저장 위치
+
+inference_ensemble_config:
+    model_dir: # 앙상블에 사용할 모델 경로
+        model_0: # path, tokenizer 형태는 반드시 지켜주시고, 모델 이름은 자유롭게 적으셔도 됩니다.
+            path: ./best_model/koelectra-base-punc-focal-128-0.01-0.00005
+            tokenizer: monologg/koelectra-base-v3-discriminator
+        model_1: 
+            path: ./best_model/mluke-large-focal-64-30-0.00002
+            tokenizer: studio-ousia/mluke-large
+    csv_path: # 앙상블에 사용할 csv 파일 경로
+        csv_0: ./prediction/koelectra-base-punc-focal.csv
+        csv_1: ./prediction/mluke-large-focal.csv
+    output_path: ./prediction/submission_ensemble.csv # 예측 결과 파일 저장 위치
+    test_dataset_path: ./dataset/test/test_data.csv # 테스트 데이터셋 파일 위치

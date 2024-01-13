@@ -8,7 +8,7 @@ from transformers import AutoModelForSequenceClassification, AutoTokenizer
 from torch.utils.data import DataLoader
 
 from data.dataset import RE_Dataset
-from utils.utils import set_seed, num_to_label
+from utils.utils import set_seed, num_to_label, load_config
 from preprocessing.tokenizer import TypedEntityMarkerTokenizer, TypedEntityMarkerPuncTokenizer
 
 def inference(model, tokenized_sent, device):
@@ -47,18 +47,16 @@ if __name__ == '__main__':
     set_seed(42)
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
-    MODEL_NAME = "klue/roberta-base"
-    model_dir = './results/roberta-base2-focal/checkpoint-9000'
-    test_dataset_dir = "./dataset/test/test_data.csv"
-    output_path = './prediction/submission-roberta-base2-focal.csv'
+    CONFIG_PATH = './config.yaml'
+    config = load_config(CONFIG_PATH, 'inference_config')
 
-    tokenizer = TypedEntityMarkerPuncTokenizer(MODEL_NAME)
-    model = AutoModelForSequenceClassification.from_pretrained(model_dir)
+    tokenizer = TypedEntityMarkerPuncTokenizer(config['tokenizer_name'])
+    model = AutoModelForSequenceClassification.from_pretrained(config['model_dir'])
     model.resize_token_embeddings(len(tokenizer.tokenizer))
     model.to(device)
 
     ## load test datset
-    Re_test_dataset = RE_Dataset(test_dataset_dir ,tokenizer, train=False)
+    Re_test_dataset = RE_Dataset(config['test_dataset_path'] ,tokenizer, train=False)
     test_id, _, _ = Re_test_dataset.get_data_and_label()
     
     ## predict answer
@@ -67,4 +65,4 @@ if __name__ == '__main__':
     
     ## make csv file with predicted answer
     output = pd.DataFrame({'id':test_id,'pred_label':pred_answer,'probs':output_prob,})
-    output.to_csv(output_path, index=False)
+    output.to_csv(config['output_path'], index=False)
