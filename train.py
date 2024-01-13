@@ -12,12 +12,6 @@ from utils.utils import load_config
 def train():
     CONFIG_PATH = './config.yaml'
     config = load_config(CONFIG_PATH, 'train_config')
-
-    wandb.init(
-        project="RE",
-        name=config['model_save_name'],
-        entity="goghinarles"
-        )
     
     set_seed(42)        
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
