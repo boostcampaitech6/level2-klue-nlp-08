@@ -38,46 +38,31 @@ class TypedEntityMarkerPuncTokenizer():
             s4 = sentence[s_start:s_end+1]
             s5 = sentence[s_end+1:]
 
-            query = f"@ ⊙ {self.type2word[o_type]} ⊙ " + s2 + " @ 과 " + \
+            query = f"@ ⊙ {self.type2word[o_type]} ⊙ " + s2 + " @ 과" + \
                     f"# ^ {self.type2word[s_type]} ^ " + s4 + f" # 사이의 관계는 무엇인가?"
             answer = s1 + f"@ ⊙ {self.type2word[o_type]} ⊙ " + s2 + " @ " + \
                 s3 + f"# ^ {self.type2word[s_type]} ^ " + s4 + f" # " + s5
             
-            if self.cleaning:
-                query = cleaned_sentence(query)
-                answer = cleaned_sentence(answer)
-                if self.add_query:
-                    return query, answer
-                else:
-                    return answer
-            else:
-                if self.add_query:
-                    return query, answer
-                else:
-                    return answer
         else:
             s1 = sentence[:s_start]
             s2 = sentence[s_start:s_end+1]
             s3 = sentence[s_end+1 :o_start]
             s4 = sentence[o_start:o_end+1]
             s5 = sentence[o_end+1:]
-            query = f"# ^ {self.type2word[s_type]} ^ " + s2 + " # 과 " + \
+            
+            query = f"# ^ {self.type2word[s_type]} ^ " + s2 + " # 과" + \
                     f"@ ⊙ {self.type2word[o_type]} ⊙ " + s4 + f" @ 사이의 관계는 무엇인가?"
             answer = s1 + f"# ^ {self.type2word[s_type]} ^ " + s2 + " # " + \
                 s3 + f"@ ⊙ {self.type2word[o_type]} ⊙ " + s4 + f" @ " + s5
             
-            if self.cleaning:
-                query = cleaned_sentence(query)
-                answer = cleaned_sentence(answer)
-                if self.add_query:
-                    return query, answer
-                else:
-                    return answer
-            else:
-                if self.add_query:
-                    return query, answer
-                else:
-                    return answer
+        if self.cleaning:
+            query = cleaned_sentence(query)
+            answer = cleaned_sentence(answer)  
+
+        if self.add_query:
+            return query, answer
+        else:
+            return answer
         
     def tokenize(self, dataset):
         marked_sentence = []
