@@ -1,12 +1,19 @@
 from tqdm import tqdm
 from transformers import AutoTokenizer
-    
+import re
+
+def cleaned_sentence(sentence):
+    is_special_character = re.compile('[^@⊙\^#,~()\'\"/_;:*$?&%<>!.A-Za-z0-9ㄱ-ㅎ가-힣一-龥ぁ-んァ-ン\s]')
+    sentence = is_special_character.sub(' ', sentence)
+    return sentence
+
 class TypedEntityMarkerPuncTokenizer():
-    def __init__(self, tokenizer_name, add_query=False):
+    def __init__(self, tokenizer_name, add_query=False, cleaning=False):
         self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
         self.add_query = add_query
         self.type2word = {"ORG": "단체", "PER": "사람", "DAT": "날짜", 
                           "LOC": "위치", "POH": "기타", "NOH": "수량"}
+        self.cleaning = cleaning
 
     def mark_entities(self, data_series) -> str:
         ''' 
@@ -31,30 +38,46 @@ class TypedEntityMarkerPuncTokenizer():
             s4 = sentence[s_start:s_end+1]
             s5 = sentence[s_end+1:]
 
-            query = f"@ ⊙ {self.type2word[o_type]} ⊙ " + s2 + " @ 과" + \
+            query = f"@ ⊙ {self.type2word[o_type]} ⊙ " + s2 + " @ 과 " + \
                     f"# ^ {self.type2word[s_type]} ^ " + s4 + f" # 사이의 관계는 무엇인가?"
             answer = s1 + f"@ ⊙ {self.type2word[o_type]} ⊙ " + s2 + " @ " + \
                 s3 + f"# ^ {self.type2word[s_type]} ^ " + s4 + f" # " + s5
             
-            if self.add_query:
-                return query, answer
+            if self.cleaning:
+                query = cleaned_sentence(query)
+                answer = cleaned_sentence(answer)
+                if self.add_query:
+                    return query, answer
+                else:
+                    return answer
             else:
-                return answer
+                if self.add_query:
+                    return query, answer
+                else:
+                    return answer
         else:
             s1 = sentence[:s_start]
             s2 = sentence[s_start:s_end+1]
             s3 = sentence[s_end+1 :o_start]
             s4 = sentence[o_start:o_end+1]
             s5 = sentence[o_end+1:]
-            query = f"# ^ {self.type2word[s_type]} ^ " + s2 + " # 과" + \
+            query = f"# ^ {self.type2word[s_type]} ^ " + s2 + " # 과 " + \
                     f"@ ⊙ {self.type2word[o_type]} ⊙ " + s4 + f" @ 사이의 관계는 무엇인가?"
             answer = s1 + f"# ^ {self.type2word[s_type]} ^ " + s2 + " # " + \
                 s3 + f"@ ⊙ {self.type2word[o_type]} ⊙ " + s4 + f" @ " + s5
             
-            if self.add_query:
-                return query, answer
+            if self.cleaning:
+                query = cleaned_sentence(query)
+                answer = cleaned_sentence(answer)
+                if self.add_query:
+                    return query, answer
+                else:
+                    return answer
             else:
-                return answer
+                if self.add_query:
+                    return query, answer
+                else:
+                    return answer
         
     def tokenize(self, dataset):
         marked_sentence = []
