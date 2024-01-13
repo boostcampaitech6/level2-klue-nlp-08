@@ -1,6 +1,6 @@
 train_config:
     model_name: studio-ousia/mluke-large  # 사전 훈련된 모델 이름
-    model_save_name: mluke-large-focal-query-0.05 # wandb 에 사용할 모델 이름
+    model_save_name: mluke-large-focal-query-0.05 # wandb 사용 시 wandb.init 의 name 인자에 대한 값으로 보내는 용도입니다.
     add_query: True # TypedEntityMarkerPuncTokenizer 에서 add_query 사용할지 여부
     train_dataset_path: ./dataset/train/train_split_v1.csv  # 훈련 데이터셋 파일 위치
     valid_dataset_path: ./dataset/train/valid_split_v1.csv # 평가 데이터셋 파일 위치
