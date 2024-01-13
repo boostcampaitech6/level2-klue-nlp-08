@@ -174,9 +174,7 @@ class EnsembleInference:
         labels = num_to_label(indices)
         test_id = pd.read_csv(self.dataset_path)['id'].values
 
-        probs_str = ['['+' '.join(map(str, prob)) +']' for prob in probs]
-
-        print(f"Length of test_id: {len(test_id)}, Length of labels: {len(labels)}, Length of probs_str: {len(probs_str)}")
+        probs_str = ["["+', '.join(map(str, prob)) +"]" for prob in probs]
 
         answer = pd.DataFrame({'id': test_id, 'pred_label': labels, 'probs': probs_str})
 
@@ -198,4 +196,4 @@ if __name__ == '__main__':
         # [0.3, 0.2, 0.5] # weight: hard type 을 사용하면 weight 없이 사용해주세요.
     )
 
-    output.to_csv(config['output_path'])
+    output.to_csv(config['output_path'], index=False)
