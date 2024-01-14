@@ -1,10 +1,9 @@
+import yaml
 import random
-
 import pickle
+
 import torch
 import numpy as np
-
-import yaml
 
 def set_seed(seed:int = 42):
     '''실험 결과 재현을 위한 random seed를 설정'''
@@ -59,5 +58,5 @@ def num_to_label(label):
 def load_config(file_path, section):
     with open(file_path, 'r') as config_file:
         config = yaml.safe_load(config_file)
-        
+
     return config[section]
