@@ -160,7 +160,6 @@ cython_debug/
 #.idea/
 
 *.csv
-*.yaml
 *.ckpt
 
 best_model/
@@ -169,3 +168,6 @@ results/
 wandb/
 test.ipynb
 prediction/
+
+dict_label_to_num.pkl
+dict_num_to_label.pkl
