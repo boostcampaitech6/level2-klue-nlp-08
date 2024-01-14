@@ -45,6 +45,9 @@ inference_config:
     output_path: ./prediction/mluke-large-focal.csv # 예측 결과 파일 저장 위치
 
 inference_ensemble_config:
+    mode: model
+    voting_type: soft
+    weight: null
     model_dir: # 앙상블에 사용할 모델 경로
         model_0: # path, tokenizer 형태는 반드시 지켜주시고, 모델 이름은 자유롭게 적으셔도 됩니다.
             path: ./best_model/koelectra-base-punc-focal-128-0.01-0.00005
