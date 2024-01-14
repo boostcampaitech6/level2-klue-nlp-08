@@ -190,10 +190,10 @@ if __name__ == '__main__':
 
     ensemble = EnsembleInference(config['test_dataset_path'])
     output = ensemble.vote(
-        mode='model', # mode: csv, model
-        voting_type='soft', # type: hard, soft
+        mode=config['mode'], # mode: csv, model
+        voting_type=config['voting_type'], # type: hard, soft
         path=config['model_dir'], # path: config['model_dir'], config['csv_path']
-        # [0.3, 0.2, 0.5] # weight: hard type 을 사용하면 weight 없이 사용해주세요.
+        w=config['weight'] # w(weight): hard type 을 사용하면 weight 를 null 로 설정해주세요.
     )
 
     output.to_csv(config['output_path'], index=False)
