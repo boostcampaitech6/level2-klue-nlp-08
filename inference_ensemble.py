@@ -109,6 +109,10 @@ class EnsembleInference:
         return final_probs, final_preds
 
     def vote_hard_csv(self, probs:pd.DataFrame):
+        '''
+        vote_by_csv 에서 호출되는 메소드.
+        csv 의 확률 컬럼을 concat 한 DataFrame 을 바탕으로 하드 보팅을 수행합니다.
+        '''
         num_of_columns = len(probs.columns)
         final_preds = []
         final_probs = []
@@ -126,6 +130,10 @@ class EnsembleInference:
         return final_probs, final_preds
     
     def vote_soft_csv(self, probs:pd.DataFrame, weight:List):
+        '''
+        vote_by_csv 에서 호출되는 메소드
+        csv 의 확률 컬럼을 concat 한 DataFrame 과 가중치를 바탕으로 소프트 보팅을 수행합니다.
+        '''
         final_probs = []
         final_preds = []
         for _, row in tqdm(probs.iterrows(), desc="csv soft voting", total=len(probs)):
@@ -140,6 +148,10 @@ class EnsembleInference:
         return final_probs, final_preds
 
     def vote_by_csv(self, csv_path:List, vote_type:str, weight:List):
+        '''
+        vote 에서 호출되는 메소드
+        주어진 csv_path 로 데이터들을 불러와 probs 컬럼을 concat 하고, 보팅 유형에 따라 적절한 메소드에 전달합니다.
+        '''
         prob_columns = pd.DataFrame()
         for path in csv_path.values():
             df = pd.read_csv(path)
@@ -154,10 +166,14 @@ class EnsembleInference:
         return final_probs, final_preds
 
     def vote(self, mode:str, voting_type:str, path:dict, w=None):
+        '''
+        주어진 mode 에 따라 각 모드에 맞는 메소드를 호출하고 voting 결과를 반환 받습니다.
+        voting 결과를 바탕으로 id, pred_label, probs 컬럼으로 구성된 데이터 프레임을 최종 반환합니다.
+        '''
         modes = ['csv', 'model']
         types = ['hard', 'soft']
         assert mode in modes, print("Warning: Invalid mode")
-        assert voting_type in types, print("Invalid type")
+        assert voting_type in types, print("Warning: Invalid type")
 
         weight = w
         if weight is not None:
