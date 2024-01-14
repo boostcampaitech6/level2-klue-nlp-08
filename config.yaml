@@ -48,16 +48,15 @@ inference_ensemble_config:
     mode: model
     voting_type: soft
     weight: null
-    path:
-        model_dir: # 앙상블에 사용할 모델 경로
-            model_0: # path, tokenizer 형태는 반드시 지켜주시고, 모델 이름은 자유롭게 적으셔도 됩니다.
-                path: ./best_model/koelectra-base-punc-focal-128-0.01-0.00005
-                tokenizer: monologg/koelectra-base-v3-discriminator
-            model_1: 
-                path: ./best_model/mluke-large-focal-64-30-0.00002
-                tokenizer: studio-ousia/mluke-large
-        csv_path: # 앙상블에 사용할 csv 파일 경로
-            csv_0: ./prediction/koelectra-base-punc-focal.csv
-            csv_1: ./prediction/mluke-large-focal.csv
+    model_dir: # 앙상블에 사용할 모델 경로
+        model_0: # path, tokenizer 형태는 반드시 지켜주시고, 모델 이름은 자유롭게 적으셔도 됩니다.
+            path: ./best_model/koelectra-base-punc-focal-128-0.01-0.00005
+            tokenizer: monologg/koelectra-base-v3-discriminator
+        model_1: 
+            path: ./best_model/mluke-large-focal-64-30-0.00002
+            tokenizer: studio-ousia/mluke-large
+    csv_path: # 앙상블에 사용할 csv 파일 경로
+        csv_0: ./prediction/koelectra-base-punc-focal.csv
+        csv_1: ./prediction/mluke-large-focal.csv
     output_path: ./prediction/submission_ensemble.csv # 예측 결과 파일 저장 위치
     test_dataset_path: ./dataset/test/test_data.csv # 테스트 데이터셋 파일 위치
