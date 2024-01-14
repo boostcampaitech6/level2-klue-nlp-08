@@ -59,4 +59,5 @@ def num_to_label(label):
 def load_config(file_path, section):
     with open(file_path, 'r') as config_file:
         config = yaml.safe_load(config_file)
+        
     return config[section]
