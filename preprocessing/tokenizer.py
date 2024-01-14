@@ -1,25 +1,42 @@
 from tqdm import tqdm
 from transformers import AutoTokenizer
-import re
-
-def cleaned_sentence(sentence):
-    is_special_character = re.compile('[^@⊙\^#,~()\'\"/_;:*$?&%<>!.A-Za-z0-9ㄱ-ㅎ가-힣一-龥ぁ-んァ-ン\s]')
-    sentence = is_special_character.sub(' ', sentence)
-    return sentence
 
 class TypedEntityMarkerPuncTokenizer():
-    def __init__(self, tokenizer_name, add_query=False, cleaning=False):
+    def __init__(self, tokenizer_name, add_query=False):
         self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
         self.add_query = add_query
         self.type2word = {"ORG": "단체", "PER": "사람", "DAT": "날짜", 
                           "LOC": "위치", "POH": "기타", "NOH": "수량"}
-        self.cleaning = cleaning
+        
+    def get_query(self, data_series) -> str:
+        '''
+        return "@ ⊙ 사람 ⊙ 이순신 @ 과 # ^ 시대 ^ 조선 # 의 관계는 무엇인가? [SEP] "
+        '''
+
+        sentence = data_series['sentence']
+        o_start = int(data_series['object_start_idx'])
+        o_end = int(data_series['object_end_idx'])
+        o_type = data_series['object_type']
+        s_start = int(data_series['subject_start_idx'])
+        s_end = int(data_series['subject_end_idx'])
+        s_type = data_series['subject_type']
+
+        if o_start < s_start:
+            object = sentence[o_start:o_end+1]
+            subject = sentence[s_start:s_end+1]
+
+            return f"@ ⊙ {self.type2word[o_type]} ⊙ " + object + " @ 과" + \
+                    f"# ^ {self.type2word[s_type]} ^ " + subject + f" # 사이의 관계는 무엇인가? [SEP] "
+        else:
+            subject = sentence[s_start:s_end+1]
+            object = sentence[o_start:o_end+1]
+
+            return f"# ^ {self.type2word[s_type]} ^ " + subject + " # 과" + \
+                    f"@ ⊙ {self.type2word[o_type]} ⊙ " + object + f" @ 사이의 관계는 무엇인가? [SEP] "
+
 
     def mark_entities(self, data_series) -> str:
         ''' 
-        if add_query == True
-            @ ⊙ 사람 ⊙ 이순신 @ 과 # ^ 시대 ^ 조선 # 의 관계는 무엇인가? @ ⊙ 사람 ⊙ 이순신 @ 장군은 # ^ 시대 ^ 조선 # 출신 이다 
-        else:
             @ ⊙ 사람 ⊙ 이순신 @ 장군은 # ^ 시대 ^ 조선 # 출신 이다 
         '''
 
@@ -37,10 +54,8 @@ class TypedEntityMarkerPuncTokenizer():
             s3 = sentence[o_end+1:s_start]
             s4 = sentence[s_start:s_end+1]
             s5 = sentence[s_end+1:]
-
-            query = f"@ ⊙ {self.type2word[o_type]} ⊙ " + s2 + " @ 과" + \
-                    f"# ^ {self.type2word[s_type]} ^ " + s4 + f" # 사이의 관계는 무엇인가?"
-            answer = s1 + f"@ ⊙ {self.type2word[o_type]} ⊙ " + s2 + " @ " + \
+            
+            return s1 + f"@ ⊙ {self.type2word[o_type]} ⊙ " + s2 + " @ " + \
                 s3 + f"# ^ {self.type2word[s_type]} ^ " + s4 + f" # " + s5
             
         else:
@@ -50,24 +65,14 @@ class TypedEntityMarkerPuncTokenizer():
             s4 = sentence[o_start:o_end+1]
             s5 = sentence[o_end+1:]
             
-            query = f"# ^ {self.type2word[s_type]} ^ " + s2 + " # 과" + \
-                    f"@ ⊙ {self.type2word[o_type]} ⊙ " + s4 + f" @ 사이의 관계는 무엇인가?"
-            answer = s1 + f"# ^ {self.type2word[s_type]} ^ " + s2 + " # " + \
+            return s1 + f"# ^ {self.type2word[s_type]} ^ " + s2 + " # " + \
                 s3 + f"@ ⊙ {self.type2word[o_type]} ⊙ " + s4 + f" @ " + s5
-            
-        if self.cleaning:
-            query = cleaned_sentence(query)
-            answer = cleaned_sentence(answer)  
-
-        if self.add_query:
-            return query, answer
-        else:
-            return answer
-        
+                    
     def tokenize(self, dataset):
         marked_sentence = []
         for _, data in tqdm(dataset.iterrows(), desc="adding typed entity marker", total=len(dataset)):
-            marked_sentence.append(self.mark_entities(data))
+            query = self.get_query(data) if self.add_query else ''
+            marked_sentence.append(query + self.mark_entities(data))
             
         tokenized_sentences = self.tokenizer(
             marked_sentence,
