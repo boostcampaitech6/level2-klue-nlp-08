@@ -1,4 +1,12 @@
+import re
+
 import pandas as pd
+
+def clean_sentence(sentence):
+    is_special_character = re.compile('[^@⊙\^#,~()\'\"/_;:*$?&%<>!.A-Za-z0-9ㄱ-ㅎ가-힣一-龥ぁ-んァ-ン\s]')
+    sentence = is_special_character.sub(' ', sentence)
+    
+    return sentence
 
 def preprocessing_dataset(dataset):
   '''
