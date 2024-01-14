@@ -141,7 +141,7 @@ class EnsembleInference:
 
     def vote_by_csv(self, csv_path:List, vote_type:str, weight:List):
         prob_columns = pd.DataFrame()
-        for path in csv_path:
+        for path in csv_path.values():
             df = pd.read_csv(path)
             prob_column = df['probs']
             prob_columns = pd.concat([prob_columns, prob_column], axis=1)
@@ -167,9 +167,9 @@ class EnsembleInference:
             weight = [1.0] * len(path.keys())
 
         if mode == 'model':
-            probs, indices = self.vote_by_model(path, voting_type, weight)
+            probs, indices = self.vote_by_model(path['model_dir'], voting_type, weight)
         else:
-            probs, indices = self.vote_by_csv(path.values(), voting_type, weight)
+            probs, indices = self.vote_by_csv(path['csv_path'], voting_type, weight)
 
         labels = num_to_label(indices)
         test_id = pd.read_csv(self.dataset_path)['id'].values
@@ -192,7 +192,7 @@ if __name__ == '__main__':
     output = ensemble.vote(
         mode=config['mode'], # mode: csv, model
         voting_type=config['voting_type'], # type: hard, soft
-        path=config['model_dir'], # path: config['model_dir'], config['csv_path']
+        path=config['path'], # path: config['model_dir'], config['csv_path']
         w=config['weight'] # w(weight): hard type 을 사용하면 weight 를 null 로 설정해주세요.
     )
 
