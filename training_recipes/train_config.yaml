@@ -4,6 +4,7 @@ train_config:
     add_query: True # TypedEntityMarkerPuncTokenizer 에서 add_query 사용할지 여부
     train_dataset_path: ./dataset/train/train_split_v2.csv  # 훈련 데이터셋 파일 위치
     valid_dataset_path: ./dataset/train/valid_split_v1.csv # 평가 데이터셋 파일 위치
+    tokenizer_type: TypedEntityMarkerPuncTokenizer  # TypedEntityMarkerPuncTokenizer, TypedEntityMarkerTokenizer, ConcatEntityTokenizer
 
 train_args:
     output_dir: ./results/vaiv/kobigbird-roberta-large-focal-none-10-v2  # 출력 디렉토리
