@@ -3,6 +3,17 @@ from huggingface_hub import HfApi
 # 1. 터미널에서 huggingface-cli login 명령어를 실행하여 먼저 인증을 거쳐야합니다.
 # 2. hugging face 조직(2024-level2-re-nlp-8)에 들어가서 repository를 생성합니다. 
 # 3. 아래 스크립트를 실행해서 모델을 업로드합니다.
+
+# 참고) 모델 불러오기
+'''
+    repo_id = '2024-level2-re-nlp-8/klue-roberta-large-71.01-typed-entity'
+    token = 'huggingface token'
+    
+    model_config = AutoConfig.from_pretrained(repo_id, use_auth_token=token)
+    model_config.num_labels = 30
+    model = AutoModelForSequenceClassification.from_pretrained(repo_id, config=model_config, use_auth_token=token)
+'''
+
 if __name__ == '__main__':
     api = HfApi()
 
