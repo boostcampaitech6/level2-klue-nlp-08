@@ -47,7 +47,7 @@ if __name__ == '__main__':
     set_seed(42)
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
-    CONFIG_PATH = './config.yaml'
+    CONFIG_PATH = './training_recipes/inference_config.yaml'
     config = load_config(CONFIG_PATH, 'inference_config')
 
     tokenizer = TypedEntityMarkerPuncTokenizer(config['tokenizer_name'])
