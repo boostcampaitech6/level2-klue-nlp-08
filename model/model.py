@@ -21,6 +21,6 @@ def load_model(model_name, num_labels, token=''):
 
     args['config'] = model_config
 
-    model = AutoModelForSequenceClassification.from_pretrained(model_name, config=model_config)
+    model = AutoModelForSequenceClassification.from_pretrained(**args)
     
     return model
