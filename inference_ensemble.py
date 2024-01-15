@@ -87,7 +87,7 @@ class EnsembleInference:
                     output = model(
                         input_ids = data['input_ids'].to(self.device),
                         attention_mask = data['attention_mask'].to(self.device),
-                        token_tpye_ids=['token_type_ids'].to(self.device)
+                        token_type_ids=data['token_type_ids'].to(self.device)
                     )
                 logits = output[0]
                 weighted_prob = F.softmax(logits, dim=-1).detach().cpu().numpy() * weights[i]
