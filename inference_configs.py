@@ -50,13 +50,8 @@ if __name__ == '__main__':
     CONFIG_PATH = './training_recipes/inference_config.yaml'
     config = load_config(CONFIG_PATH, 'inference_config')
 
-    '''
-    TOKEN : 🤗 로그인 토큰
-    보안 상 이유로 로그인 토큰은 git 에 올라오지 않도록 해주세요.
-    '''
-    TOKEN = ''
     tokenizer = TypedEntityMarkerPuncTokenizer(config['tokenizer_name'])
-    model = load_model(config['model_info'], config['num_labels'], TOKEN)
+    model = load_model(config['model_info'], config['num_labels'], config['token'])
     model.resize_token_embeddings(len(tokenizer.tokenizer))
     model.to(device)
 
