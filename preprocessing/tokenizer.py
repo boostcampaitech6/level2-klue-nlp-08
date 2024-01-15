@@ -25,14 +25,14 @@ class TypedEntityMarkerPuncTokenizer():
             object = sentence[o_start:o_end+1]
             subject = sentence[s_start:s_end+1]
 
-            return f"@ ⊙ {self.type2word[o_type]} ⊙ " + object + " @ 과" + \
-                    f"# ^ {self.type2word[s_type]} ^ " + subject + f" # 사이의 관계는 무엇인가? [SEP] "
+            return f"@ ⊙ {self.type2word[o_type]} ⊙ " + object + " @ 과 " + \
+                    f"# ^ {self.type2word[s_type]} ^ " + subject + f" # 사이의 관계는 무엇인가?"
         else:
             subject = sentence[s_start:s_end+1]
             object = sentence[o_start:o_end+1]
 
-            return f"# ^ {self.type2word[s_type]} ^ " + subject + " # 과" + \
-                    f"@ ⊙ {self.type2word[o_type]} ⊙ " + object + f" @ 사이의 관계는 무엇인가? [SEP] "
+            return f"# ^ {self.type2word[s_type]} ^ " + subject + " # 과 " + \
+                    f"@ ⊙ {self.type2word[o_type]} ⊙ " + object + f" @ 사이의 관계는 무엇인가?"
 
 
     def mark_entities(self, data_series) -> str:
