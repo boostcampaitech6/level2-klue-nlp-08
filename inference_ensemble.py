@@ -201,7 +201,7 @@ class EnsembleInference:
 if __name__ == '__main__':
     set_seed(42)
     
-    CONFIG_PATH = './config.yaml'
+    CONFIG_PATH = './training_recipes/inference_config.yaml'
     config = load_config(CONFIG_PATH, 'inference_ensemble_config')
 
     ensemble = EnsembleInference(config['test_dataset_path'])
