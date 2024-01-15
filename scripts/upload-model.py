@@ -17,8 +17,8 @@ from huggingface_hub import HfApi
 if __name__ == '__main__':
     api = HfApi()
 
-    model_path = '../best_model/vaiv/kobigbird-roberta-large-focal-query-10' # ex '/data/ephemeral/level2-klue-nlp-08/results/checkpoint-9000'
-    repo_id = '2024-level2-re-nlp-8/hyemin-test' # ex '2024-level2-re-nlp-8/xlm-roberta-large-67-punct'
+    model_path = '업로드 하려는 모델 경로' # ex '/data/ephemeral/level2-klue-nlp-08/results/checkpoint-9000'
+    repo_id = '2024-level2-re-nlp-8/{여러분이 만든 레포이름}' # ex '2024-level2-re-nlp-8/xlm-roberta-large-67-punct'
 
     api.upload_folder(
         folder_path=model_path,
