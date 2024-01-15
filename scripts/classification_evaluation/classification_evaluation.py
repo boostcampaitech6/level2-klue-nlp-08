@@ -7,8 +7,8 @@ import csv
 
 def classification_evaluation():
     # Open answer.csv and create a DataFrame
-    answer_df = pd.read_csv('/data/ephemeral/level2-klue-nlp-08/classification_evaluation/answer.csv')
-    predict_df = pd.read_csv('/data/ephemeral/level2-klue-nlp-08/classification_evaluation/predict.csv')
+    answer_df = pd.read_csv('/data/ephemeral/level2-klue-nlp-08/scripts/classification_evaluation/answer.csv')
+    predict_df = pd.read_csv('/data/ephemeral/level2-klue-nlp-08/scripts/classification_evaluation/predict.csv')
 
     # Display the DataFrame
     true_labels = answer_df['label']
@@ -29,7 +29,7 @@ def classification_evaluation():
     plt.title('Confusion Matrix')
     plt.xlabel('Predicted Label')
     plt.ylabel('True Label')
-    plt.savefig('/data/ephemeral/level2-klue-nlp-08/classification_evaluation/confusion_matrix.pdf', bbox_inches='tight')
+    plt.savefig('/data/ephemeral/level2-klue-nlp-08/scripts/classification_evaluation/confusion_matrix.pdf', bbox_inches='tight')
     
 if __name__ == '__main__':
     classification_evaluation()
