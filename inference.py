@@ -48,9 +48,9 @@ if __name__ == '__main__':
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
     MODEL_NAME = "klue/roberta-base"
-    model_dir = './results/roberta-base2-focal/checkpoint-9000'
+    model_dir = './best_model/vaiv/kobigbird-roberta-large-focal-10'
     test_dataset_dir = "./dataset/test/test_data.csv"
-    output_path = './prediction/submission-roberta-base2-focal.csv'
+    output_path = './prediction/vaiv-kobigbird-roberta-large-focal-10.csv'
 
     tokenizer = TypedEntityMarkerPuncTokenizer(MODEL_NAME)
     model = AutoModelForSequenceClassification.from_pretrained(model_dir)

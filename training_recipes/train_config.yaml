@@ -1,16 +1,16 @@
 train_config:
-    model_name: studio-ousia/mluke-large  # 사전 훈련된 모델 이름
-    model_save_name: mluke-large-focal-query-0.05 # wandb 사용 시 wandb.init 의 name 인자에 대한 값으로 보내는 용도입니다.
+    model_name: vaiv/kobigbird-roberta-large  # 사전 훈련된 모델 이름
+    model_save_name: vaiv/kobigbird-roberta-large-focal-none-10-v2 # wandb 사용 시 wandb.init 의 name 인자에 대한 값으로 보내는 용도입니다.
     add_query: True # TypedEntityMarkerPuncTokenizer 에서 add_query 사용할지 여부
-    train_dataset_path: ./dataset/train/train_split_v1.csv  # 훈련 데이터셋 파일 위치
+    train_dataset_path: ./dataset/train/train_split_v2.csv  # 훈련 데이터셋 파일 위치
     valid_dataset_path: ./dataset/train/valid_split_v1.csv # 평가 데이터셋 파일 위치
 
 train_args:
-    output_dir: ./results/mluke-large-query/  # 출력 디렉토리
+    output_dir: ./results/vaiv/kobigbird-roberta-large-focal-none-10-v2  # 출력 디렉토리
     save_total_limit: 1  # 저장된 총 모델 수 제한
-    save_steps: 600  # 모델 저장 간격
-    num_train_epochs: 20  # 총 훈련 에폭 수
-    learning_rate: 0.00002  # 학습률
+    save_steps: 500  # 모델 저장 간격
+    num_train_epochs: 10  # 총 훈련 에폭 수
+    learning_rate: 0.00005  # 학습률
     per_device_train_batch_size: 64  # 훈련 중 각 장치당 배치 크기
     per_device_eval_batch_size: 64  # 평가용 배치 크기
     warmup_steps: 500  # 학습률 스케줄러의 워머업 스텝 수
