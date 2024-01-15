@@ -4,11 +4,11 @@ import torch.nn.functional as F
 import pickle as pickle
 import numpy as np
 from tqdm import tqdm
-from transformers import AutoModelForSequenceClassification, AutoTokenizer
 from torch.utils.data import DataLoader
 
 from data.dataset import RE_Dataset
 from utils.utils import set_seed, num_to_label, load_config
+from model.model import load_model
 from preprocessing.tokenizer import TypedEntityMarkerTokenizer, TypedEntityMarkerPuncTokenizer
 
 def inference(model, tokenized_sent, device):
@@ -50,8 +50,13 @@ if __name__ == '__main__':
     CONFIG_PATH = './training_recipes/inference_config.yaml'
     config = load_config(CONFIG_PATH, 'inference_config')
 
+    '''
+    TOKEN : 🤗 로그인 토큰
+    보안 상 이유로 로그인 토큰은 git 에 올라오지 않도록 해주세요.
+    '''
+    TOKEN = ''
     tokenizer = TypedEntityMarkerPuncTokenizer(config['tokenizer_name'])
-    model = AutoModelForSequenceClassification.from_pretrained(config['model_dir'])
+    model = load_model(config['model_info'], config['num_labels'], TOKEN)
     model.resize_token_embeddings(len(tokenizer.tokenizer))
     model.to(device)
 
