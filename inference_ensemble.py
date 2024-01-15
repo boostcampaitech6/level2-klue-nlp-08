@@ -1,13 +1,13 @@
-import torch
 import ast
+from collections import Counter
+from typing import Dict, List
+
 import pandas as pd
 import torch.nn.functional as F
 import numpy as np
-from typing import Dict, List
 from tqdm.auto import tqdm
 from transformers import AutoModelForSequenceClassification
 from torch.utils.data import DataLoader
-from collections import Counter
 
 from data.dataset import RE_Dataset
 from utils.utils import set_seed, num_to_label, load_config
