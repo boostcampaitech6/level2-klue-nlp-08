@@ -1,15 +1,17 @@
 inference_config:
-    model_dir: ./best_model/mluke-large-focal-64-30-0.00002  # 모델 디렉토리
-    tokenizer_name: studio-ousia/mluke-large # 토크나이저 이름
+    model_info: 2024-level2-re-nlp-8/klue-roberta-large-71.01-typed-entity  # 모델 폴더 혹은 🤗 repo
+    tokenizer_name: klue/roberta-large # 토크나이저 이름
     test_dataset_path: ./dataset/test/test_data.csv # 테스트 데이터셋 파일 위치
-    output_path: ./prediction/mluke-large-focal.csv # 예측 결과 파일 저장 위치
+    output_path: ./prediction/hug_test.csv # 예측 결과 파일 저장 위치
+    token: '' ## 🤗 로그인 토큰. git 에 올라가지 않도록 주의해주세요.
+    num_labels: 30 # 예측 라벨 개수
 
 inference_ensemble_config:
     mode: model
     voting_type: soft
     weight: null
     path:
-        model_dir: # 앙상블에 사용할 모델 경로
+        model_info: # 모델 폴더 혹은 🤗 repo
             model_0: # path, tokenizer 형태는 반드시 지켜주시고, 모델 이름은 자유롭게 적으셔도 됩니다.
                 path: ./best_model/koelectra-base-punc-focal-128-0.01-0.00005
                 tokenizer: monologg/koelectra-base-v3-discriminator
@@ -21,3 +23,5 @@ inference_ensemble_config:
             csv_1: ./prediction/mluke-large-focal.csv
     output_path: ./prediction/submission_ensemble.csv # 예측 결과 파일 저장 위치
     test_dataset_path: ./dataset/test/test_data.csv # 테스트 데이터셋 파일 위치
+    token: '' ## 🤗 로그인 토큰. git 에 올라가지 않도록 주의해주세요.
+    num_labels: 30 # 예측 라벨 개수
