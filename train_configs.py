@@ -13,7 +13,7 @@ from preprocessing.tokenizer import TypedEntityMarkerTokenizer, TypedEntityMarke
 def train():
     set_seed(42)        
     
-    CONFIG_PATH = './train_configs/config.yaml'
+    CONFIG_PATH = './training_recipes/train_config.yaml'
     config = load_config(CONFIG_PATH, 'train_config')
 
     # wandb project name
