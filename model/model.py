@@ -1,6 +1,6 @@
 from transformers import AutoConfig, AutoModelForSequenceClassification
 
-def load_model(model_name, num_labels):
+def load_model(model_name, num_labels, token=''):
     """
     Hugging Face 트랜스포머 라이브러리에서 사전 학습된 시퀀스 분류 모델을 로드합니다.
     
@@ -11,9 +11,16 @@ def load_model(model_name, num_labels):
     Returns:
         transformers.modeling_auto.AutoModelForSequenceClassification: 지정된 수의 라벨에 대해 구성된 사전 학습된 시퀀스 분류 모델입니다.
     """
-    model_config = AutoConfig.from_pretrained(model_name)
+    
+    args = {'pretrained_model_name_or_path': model_name}
+    if len(token) > 0:
+        args['token'] = token
+
+    model_config = AutoConfig.from_pretrained(**args)
     model_config.num_labels = num_labels
 
-    model = AutoModelForSequenceClassification.from_pretrained(model_name, config=model_config)
+    args['config'] = model_config
 
+    model = AutoModelForSequenceClassification.from_pretrained(**args)
+    
     return model

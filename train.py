@@ -8,7 +8,7 @@ from model.model import load_model
 from utils.metrics import compute_metrics
 from data.dataset import RE_Dataset
 from trainer.trainer import FocalLossTrainer
-from preprocessing.tokenizer import TypedEntityMarkerTokenizer, TypedEntityMarkerPuncTokenizer, ConcatEntityTokenizer
+from preprocessing.tokenizer import TypedEntityMarkerTokenizer, TypedEntityMarkerPuncTokenizer, ConcatEntityTokenizer, load_tokenizer
 
 def train():
     set_seed(42)        
@@ -20,7 +20,7 @@ def train():
     wandb.init(project="KLUE-RE-3") 
     wandb.run.name = MODEL_NAME
     
-    tokenizer = TypedEntityMarkerPuncTokenizer(MODEL_NAME, add_query=True)
+    tokenizer = load_tokenizer('TypedEntityMarkerPuncTokenizer', MODEL_NAME, add_query=False)
     
     RE_train_dataset = RE_Dataset(data_path="./dataset/train/train_split_v1.csv", 
                                   tokenizer=tokenizer)

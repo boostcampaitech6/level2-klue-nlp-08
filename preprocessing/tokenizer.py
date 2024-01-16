@@ -1,6 +1,14 @@
 from tqdm import tqdm
 from transformers import AutoTokenizer
 
+def load_tokenizer(tokenizer_type, tokenizer_name, add_query=False):
+    if tokenizer_type == 'TypedEntityMarkerPuncTokenizer':
+        return TypedEntityMarkerPuncTokenizer(tokenizer_name, add_query)
+    if tokenizer_type == 'TypedEntityMarkerTokenizer':
+        return TypedEntityMarkerTokenizer(tokenizer_name)
+    if tokenizer_type == 'ConcatEntityTokenizer':
+        return ConcatEntityTokenizer(tokenizer_name)
+
 class TypedEntityMarkerPuncTokenizer():
     def __init__(self, tokenizer_name, add_query=False):
         self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
@@ -10,7 +18,7 @@ class TypedEntityMarkerPuncTokenizer():
         
     def get_query(self, data_series) -> str:
         '''
-        return "@ ⊙ 사람 ⊙ 이순신 @ 과 # ^ 시대 ^ 조선 # 의 관계는 무엇인가? [SEP] "
+        return "@ ⊙ 사람 ⊙ 이순신 @ 과 # ^ 시대 ^ 조선 # 의 관계는 무엇인가?"
         '''
 
         sentence = data_series['sentence']
@@ -25,14 +33,14 @@ class TypedEntityMarkerPuncTokenizer():
             object = sentence[o_start:o_end+1]
             subject = sentence[s_start:s_end+1]
 
-            return f"@ ⊙ {self.type2word[o_type]} ⊙ " + object + " @ 과" + \
-                    f"# ^ {self.type2word[s_type]} ^ " + subject + f" # 사이의 관계는 무엇인가? [SEP] "
+            return f"@ ⊙ {self.type2word[o_type]} ⊙ " + object + " @ 과 " + \
+                    f"# ^ {self.type2word[s_type]} ^ " + subject + f" # 사이의 관계는 무엇인가?"
         else:
             subject = sentence[s_start:s_end+1]
             object = sentence[o_start:o_end+1]
 
-            return f"# ^ {self.type2word[s_type]} ^ " + subject + " # 과" + \
-                    f"@ ⊙ {self.type2word[o_type]} ⊙ " + object + f" @ 사이의 관계는 무엇인가? [SEP] "
+            return f"# ^ {self.type2word[s_type]} ^ " + subject + " # 과 " + \
+                    f"@ ⊙ {self.type2word[o_type]} ⊙ " + object + f" @ 사이의 관계는 무엇인가?"
 
 
     def mark_entities(self, data_series) -> str:
@@ -69,11 +77,15 @@ class TypedEntityMarkerPuncTokenizer():
                 s3 + f"@ ⊙ {self.type2word[o_type]} ⊙ " + s4 + f" @ " + s5
                     
     def tokenize(self, dataset):
+
         marked_sentence = []
         for _, data in tqdm(dataset.iterrows(), desc="adding typed entity marker", total=len(dataset)):
-            query = self.get_query(data) if self.add_query else ''
-            marked_sentence.append(query + self.mark_entities(data))
-            
+            answer = self.mark_entities(data)
+            if self.add_query:
+                marked_sentence.append([self.get_query(data), self.mark_entities(data)])
+            else:
+                marked_sentence.append(self.mark_entities(data))
+
         tokenized_sentences = self.tokenizer(
             marked_sentence,
             return_tensors="pt",
