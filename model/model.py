@@ -13,7 +13,7 @@ def load_model(model_name, num_labels, token=''):
     """
     
     args = {'pretrained_model_name_or_path': model_name}
-    if len(token) > 0:
+    if '2024-level2-re-nlp-8' in model_name:
         args['token'] = token
 
     model_config = AutoConfig.from_pretrained(**args)
