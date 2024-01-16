@@ -2,21 +2,24 @@ import ast
 from collections import Counter
 from typing import Dict, List
 
+import torch
 import pandas as pd
 import torch.nn.functional as F
 import numpy as np
 from tqdm.auto import tqdm
-from transformers import AutoModelForSequenceClassification
 from torch.utils.data import DataLoader
 
 from data.dataset import RE_Dataset
 from utils.utils import set_seed, num_to_label, load_config
+from model.model import load_model
 from preprocessing.tokenizer import TypedEntityMarkerPuncTokenizer
 
 class EnsembleInference:
-    def __init__(self, dataset_path):
+    def __init__(self, dataset_path, num_labels, token):
         self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
         self.dataset_path = dataset_path
+        self.token = token
+        self.num_labels = num_labels
 
     def get_models_and_tokenizers(self, model_dir:Dict):
         """
@@ -26,7 +29,7 @@ class EnsembleInference:
         output = []
         for dict in tqdm(model_dir.values(), desc="load_model", total=len(model_dir)):
             tokenizer = TypedEntityMarkerPuncTokenizer(dict['tokenizer'])
-            model = AutoModelForSequenceClassification.from_pretrained(dict['path'])
+            model = load_model(dict['path'], self.num_labels, self.token)
             model.resize_token_embeddings(len(tokenizer.tokenizer))
             model.to(self.device)
             output.append([model, tokenizer])
@@ -83,7 +86,8 @@ class EnsembleInference:
                 with torch.no_grad():
                     output = model(
                         input_ids = data['input_ids'].to(self.device),
-                        attention_mask = data['attention_mask'].to(self.device)
+                        attention_mask = data['attention_mask'].to(self.device),
+                        token_type_ids=data['token_type_ids'].to(self.device)
                     )
                 logits = output[0]
                 weighted_prob = F.softmax(logits, dim=-1).detach().cpu().numpy() * weights[i]
@@ -183,7 +187,7 @@ class EnsembleInference:
             weight = [1.0] * len(path.keys())
 
         if mode == 'model':
-            probs, indices = self.vote_by_model(path['model_dir'], voting_type, weight)
+            probs, indices = self.vote_by_model(path['model_info'], voting_type, weight)
         else:
             probs, indices = self.vote_by_csv(path['csv_path'], voting_type, weight)
 
@@ -204,7 +208,7 @@ if __name__ == '__main__':
     CONFIG_PATH = './training_recipes/inference_config.yaml'
     config = load_config(CONFIG_PATH, 'inference_ensemble_config')
 
-    ensemble = EnsembleInference(config['test_dataset_path'])
+    ensemble = EnsembleInference(config['test_dataset_path'], config['num_labels'], config['token'])
     output = ensemble.vote(
         mode=config['mode'], # mode: csv, model
         voting_type=config['voting_type'], # type: hard, soft
