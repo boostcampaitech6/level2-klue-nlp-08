@@ -70,14 +70,12 @@ class TypedEntityMarkerPuncTokenizer():
                     
     def tokenize(self, dataset):
         marked_sentence = []
-        
         for _, data in tqdm(dataset.iterrows(), desc="adding typed entity marker", total=len(dataset)):
             if self.add_query:
-                query = self.get_query(data)
-                marked_sentence.append([query, self.mark_entities(data)])
+                marked_sentence.append([self.get_query(data), self.mark_entities(data)])
             else:
                 marked_sentence.append(self.mark_entities(data))
-        print(marked_sentence[0])
+
         tokenized_sentences = self.tokenizer(
             marked_sentence,
             return_tensors="pt",
