@@ -3,15 +3,14 @@ import wandb
 import pickle as pickle
 from transformers import Trainer, TrainingArguments
 
-from utils.utils import set_seed, load_config
+from utils.utils import set_seed
 from model.model import load_model
 from utils.metrics import compute_metrics
 from data.dataset import RE_Dataset
 from trainer.trainer import FocalLossTrainer
-from preprocessing.define_tokenizer import load_tokenizer
+from preprocessing.tokenizer import TypedEntityMarkerTokenizer, TypedEntityMarkerPuncTokenizer, ConcatEntityTokenizer, load_tokenizer
 
 def train():
-    wandb.init(project="KLUE-RE-3") # wandb project name
     set_seed(42)        
     MODEL_NAME = "klue/roberta-base"
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -21,13 +20,13 @@ def train():
     wandb.init(project="KLUE-RE-3") 
     wandb.run.name = MODEL_NAME
     
-    tokenizer = load_tokenizer('TypedEntityMarkerPuncTokenizer', MODEL_NAME, add_query=True)
+    tokenizer = load_tokenizer('TypedEntityMarkerPuncTokenizer', MODEL_NAME, add_query=False)
     
     RE_train_dataset = RE_Dataset(data_path="./dataset/train/train_split_v1.csv", 
                                   tokenizer=tokenizer)
     RE_valid_dataset = RE_Dataset(data_path="./dataset/train/valid_split_v1.csv", 
                                   tokenizer=tokenizer)
-
+    
     # Load Model
     model = load_model(MODEL_NAME, num_labels=30)
     model.to(device)
@@ -36,11 +35,11 @@ def train():
 
     # TrainingArguments setup
     training_args = TrainingArguments(
-        output_dir=f'./results/{MODEL_NAME}-none',          # output directory
+        output_dir='./results',          # output directory
         save_total_limit=5,              # number of total save model.
         save_steps=500,                 # model saving step.
-        num_train_epochs=10,              # total number of training epochs
-        learning_rate=5e-5,               # learning_rate
+        num_train_epochs=20,              # total number of training epochs
+        learning_rate=2e-5,               # learning_rate
         per_device_train_batch_size=64,  # batch size per device during training
         per_device_eval_batch_size=64,   # batch size for evaluation
         warmup_steps=500,                # number of warmup steps for learning rate scheduler
@@ -66,7 +65,7 @@ def train():
 
     # train start
     trainer.train()
-    model.save_pretrained(f'./best_model/./results/{MODEL_NAME}-none')
+    model.save_pretrained('./best_model')
     
 if __name__ == '__main__':
     train()

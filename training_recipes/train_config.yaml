@@ -1,7 +1,7 @@
 train_config:
     model_name: vaiv/kobigbird-roberta-large  # 사전 훈련된 모델 이름
     model_save_name: vaiv/kobigbird-roberta-large-focal-none-10-v2 # wandb 사용 시 wandb.init 의 name 인자에 대한 값으로 보내는 용도입니다.
-    add_query: True # TypedEntityMarkerPuncTokenizer 에서 add_query 사용할지 여부
+    add_query: False # TypedEntityMarkerPuncTokenizer 에서 add_query 사용할지 여부
     train_dataset_path: ./dataset/train/train_split_v2.csv  # 훈련 데이터셋 파일 위치
     valid_dataset_path: ./dataset/train/valid_split_v1.csv # 평가 데이터셋 파일 위치
     tokenizer_type: TypedEntityMarkerPuncTokenizer  # TypedEntityMarkerPuncTokenizer, TypedEntityMarkerTokenizer, ConcatEntityTokenizer
@@ -19,6 +19,6 @@ train_args:
     logging_dir: ./logs  # 로그 저장 디렉토리
     logging_steps: 100  # 로그 저장 간격
     evaluation_strategy: steps  # 훈련 중 채택할 평가 전략
-    eval_steps: 200  # 평가 간격
+    eval_steps: 100  # 평가 간격
     load_best_model_at_end: True  # 훈련 종료 시 최상의 모델 로드 여부
     metric_for_best_model: micro f1 score

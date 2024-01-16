@@ -8,7 +8,7 @@ from model.model import load_model
 from utils.metrics import compute_metrics
 from data.dataset import RE_Dataset
 from trainer.trainer import FocalLossTrainer
-from preprocessing.define_tokenizer import load_tokenizer
+from preprocessing.tokenizer import TypedEntityMarkerTokenizer, TypedEntityMarkerPuncTokenizer, ConcatEntityTokenizer, load_tokenizer
 
 def train():
     set_seed(42)        
@@ -17,13 +17,12 @@ def train():
     config = load_config(CONFIG_PATH, 'train_config')
 
     # wandb project name
-    wandb.init(project="KLUE-RE-3") 
-    wandb.run.name = config['model_name']
+    # wandb.init(project="KLUE-RE-3") 
+    # wandb.run.name = config['model_name']
 
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     print('start training on :',device)
 
-    # tokenizer = TypedEntityMarkerPuncTokenizer(config['model_name'], add_query=config['add_query'])
     tokenizer = load_tokenizer(config['tokenizer_type'], config['model_name'], add_query=config['add_query'])
 
     RE_train_dataset = RE_Dataset(config['train_dataset_path'], 
@@ -40,7 +39,7 @@ def train():
     # TrainingArguments setup
     training_args = TrainingArguments(
         **load_config(CONFIG_PATH, 'train_args'), 
-        report_to='wandb'
+        # report_to='wandb'
     )
 
     trainer = Trainer(
