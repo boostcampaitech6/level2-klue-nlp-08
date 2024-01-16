@@ -168,6 +168,7 @@ results/
 wandb/
 test.ipynb
 prediction/
+train_all.py
 
 dict_label_to_num.pkl
 dict_num_to_label.pkl
