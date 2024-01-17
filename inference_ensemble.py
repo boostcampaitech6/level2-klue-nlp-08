@@ -181,15 +181,15 @@ class EnsembleInference:
 
         weight = w
         if weight is not None:
-            assert len(weight) == len(path.keys()), print("Warning: The number of elements in 'weight' must be equal to the number of '{mode}'.")
-            assert type =="hard", print("Warning: Hard voting can't use weight")
+            assert len(weight) == len(path[mode].keys()), print(f"Warning: The number of elements in 'weight' must be equal to the number of '{mode}'.")
+            assert type =="soft", print("Warning: Hard voting can't use weight")
         else:
-            weight = [1.0] * len(path.keys())
+            weight = [1.0] * len(path[mode].keys())
 
         if mode == 'model':
-            probs, indices = self.vote_by_model(path['model_info'], voting_type, weight)
+            probs, indices = self.vote_by_model(path['model'], voting_type, weight)
         else:
-            probs, indices = self.vote_by_csv(path['csv_path'], voting_type, weight)
+            probs, indices = self.vote_by_csv(path['csv'], voting_type, weight)
 
         labels = num_to_label(indices)
         test_id = pd.read_csv(self.dataset_path)['id'].values
