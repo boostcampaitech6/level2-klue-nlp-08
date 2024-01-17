@@ -182,7 +182,7 @@ class EnsembleInference:
         weight = w
         if weight is not None:
             assert len(weight) == len(path[mode].keys()), print(f"Warning: The number of elements in 'weight' must be equal to the number of '{mode}'.")
-            assert type =="soft", print("Warning: Hard voting can't use weight")
+            assert voting_type =="soft", print("Warning: Hard voting can't use weight")
         else:
             weight = [1.0] * len(path[mode].keys())
 
