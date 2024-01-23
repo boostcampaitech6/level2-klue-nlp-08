@@ -70,3 +70,40 @@ level2-klue-nlp-08/
     ├── utils.py
     └── metrics.py
 ```
+## 데이터 분석
+<img width="453" alt="스크린샷 2024-01-19 오후 2 30 36 (1)" src="https://github.com/boostcampaitech6/level2-klue-nlp-08/assets/22702278/b46f381a-5eaf-4b15-b9e7-49589cc85470">
+no_relation이 제일 많았다.
+<img width="554" alt="스크린샷 2024-01-19 오후 2 39 55" src="https://github.com/boostcampaitech6/level2-klue-nlp-08/assets/22702278/f37035d2-894a-40fe-bd55-2dab79934c47">
+문장 길이는 klue/bert-base의 토크나이저를 통해 토큰화된 단위로 20~60 정도에 대부분 분포되어 있었다.
+
+## 데이터 전처리
+- Entity marker 추가
+    - Typed Entity Marker Special Token: [S:PERSON] 이순신 [/S:PERSON] 장군은 [O:OCUP] 조선 [/O:OCUP] 출신 이다
+    - Typed Entity Marker Punctuation: @ ⊙ 사람 ⊙ 이순신 @ 장군은 # ^ 시대 ^ 조선 # 출신 이다
+- 특수문자 제거
+    - 영어, 한글, 한자, 일본어와 일부 특수문자를 제거
+- train.csv 를 9:1 의 비율로 train 과 valid 데이터셋으로 분리
+이후 파인튜닝 실험에서 klue-roberta-large에 Special Token을 적용한 것이 F1 스코어 71.01로 제일 좋은 점수가 나왔다.
+
+## 모델 평가 및 개선
+
+- Typed Entity Marking
+    - [CLS] 이순신 [SEP] 조선 [SEP] 이순신 장군은 조선 출신이다 [SEP] 라는 문장에 여러 tokenizing 방식을 적용했다. 모델과 실험 환경에 따라 성능 향상폭이 다를 수 있다. 최종 선정 모델들의 경우 punctuation marker가 성능향상을 이끌었다.
+    - ConcatEntityTokenizer : [CLS] 이순신 [SEP] 조선 [SEP] 이순신 장군은 조선 출신 이다 [SEP]
+    - TypedEntityMarkerTokenizer : [cls] [S:PERSON] 이순신 [/S:PERSON] 장군은 [O:OCUP] 조선 [/O:OCUP] 출신 이다 [sep]
+    - TypedEntityMarkerPuncTokenizer : [cls]  ''' @ ⊙ 사람 ⊙ 이순신 @ 장군은 # ^ 시대 ^ 조선 # 출신 이다 ''’ [sep]
+    - TypedEntityMarkerTokenizer + one shot : @ ⊙ 사람 ⊙ 이순신 @ 과 # ^ 시대 ^ 조선 # 의 관계는 무엇인가? @ ⊙ 사람 ⊙ 이순신 @ 장군은 # ^ 시대 ^ 조선 # 출신 이다
+- Cleaning
+    - 정규표현식을 이용해 일부 특수문자, 한글, 숫자, 영어, 중국어, 일본어만 남기는 전처리를 진행했다.
+    - vaiv/kobigbird-robert-large을 대상으로 동일한 파라미터에서 raw data와 cleaning한 데이터를 비교했을 때, micro f1 score이 86.674에서 86.52로 미세하게 감소했다.
+- Focal Loss
+    - 클래스 불균형을 개선하기 위해 Loss Function을 Focal Loss로 적용해봤다. Focal Loss를 통해 모델이 학습할 때 오분류하는 데이터에 집중해서 학습하도록 해준다.
+    - vaiv/kobigbird-robert-large을 대상으로 Loss Function을 Cross Entropy와 Focal Loss로 학습한 모델 성능을 비교했다. Cross Entropy보다 Focal Loss로 학습한 모델의 micro f1 score이 86.674에서 86.753으로 소폭 증가했다.
+- Ensemble
+    - model 과 csv 를 대상으로 hard voting, soft voting 을 수행했다.
+- LightGBM
+    - lightGBM은 Gradient Boosting 프레임워크로, leaf-wise 방식을 채택한 Tree 기반 학습 알고리즘이다. fine-tuning 이후에 lightGBM으로 모델을 한번 더 학습했다.
+- Under sampling
+    - no_relation 이 Label인 데이터의 분포가 너무 커서 학습시에 no_relation label 데이터 일부를 drop하여 모델 학습에 활용한다.
+- Top k inference
+    - no_relation으로 예측한 결과에서 유독 오답이 많았다. 따라서 모델이 no_relation으로 예측 했으나 top-2 예측 확률과 차이가 매우 작은 경우 예측 결과를 교체한다.
