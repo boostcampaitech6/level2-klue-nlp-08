@@ -21,7 +21,13 @@
 ![Sponsorships](https://github.com/boostcampaitech6/level2-klue-nlp-08/assets/22702278/0cf934bf-c26c-4f8e-b6d0-852ed424c138)
 
 ## 데이터셋
-
+- Train 데이터 개수: 32470개
+- Test 데이터 개수: 7765개
+- 데이터를 이루는 요소: 문장, 두 단어(주체, 객체), Label
+- Label: 크게 3개 분류로 나뉘는 총 30개의 관계
+  - per: 개인 계열. ex: 사람-생일, 사람-자식, 사람-거주지 등 18개.
+  - org: 단체 계열. ex: 회사-창립일, 회사-제품, 사장-직원 등 11개.
+  - no_relation: 위에 해당하지 못한 것들.
 
 ## 실행방법
 - 환경 설치
