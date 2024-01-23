@@ -40,3 +40,13 @@
 
   `python inference.py`
 ## 프로젝트 구조
+```
+level2-klue-nlp-08/
+│
+├── train.py                // 학습 시작을 위한 메인 스크립트
+├── inference.py            // 학습 모델의 평가 및 추론을 위한 스크립트
+│
+│  
+└── utils/                  // 유틸리티 함수
+    └── ...
+```
