@@ -52,19 +52,19 @@ level2-klue-nlp-08/
 ├── inference_ensemble.py   // inference에 앙상블을 적용해서 여러 모델의 결과값을 조합할 수 있게 된 코드.
 │
 ├── data/                   // 데이터셋 클래스
-    └── dataset.py
+│   └── dataset.py
 ├── model/                  // 허깅페이스에서 모델을 불러오는 함수
-    └── model.py
+│   └── model.py
 ├── preprocessing/          // 데이터셋 전처리, 토크나이징
-    └── preprocessing.py
-    └── tokenizer.py
+│   └── preprocessing.py
+│   └── tokenizer.py
 ├── scripts/                // Confusion Matrix와 EDA, 허깅페이스에 모델 업로드하는 코드, 언더샘플링 코드
-    ├── undersampling.py
-    ├── upload_model.py
-    └── classification_evaluation/
-        └── classification_evaluation.py
+│   ├── undersampling.py
+│   ├── upload_model.py
+│   └── classification_evaluation/
+│       └── classification_evaluation.py
 ├── trainer/                // Focal Loss를 적용한 트레이너 클래스
-    └── trainer.py
+│   └── trainer.py
 ├── training_recipes/       // 설정값 파일들(.yaml)이 있는 폴더
 └── utils/                  // 유틸리티 함수
     ├── utils.py
