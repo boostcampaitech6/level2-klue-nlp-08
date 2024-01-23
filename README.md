@@ -25,8 +25,12 @@
 
 ## 실행방법
 - 환경 설치
+  
   `pip install -r requirements.txt`
 - 학습
-  `python train.py`
 
+  `python train.py`
+- 추론
+
+  `python inference.py`
 ## 프로젝트 구조
