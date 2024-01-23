@@ -73,7 +73,7 @@ level2-klue-nlp-08/
 ## 데이터 분석
 <img width="300" alt="스크린샷 2024-01-19 오후 2 30 36 (1)" src="https://github.com/boostcampaitech6/level2-klue-nlp-08/assets/22702278/b46f381a-5eaf-4b15-b9e7-49589cc85470">
 
-no_relation이 제일 많았다.
+라벨은 no_relation이 제일 많았다.
 
 <img width="300" alt="스크린샷 2024-01-19 오후 2 39 55" src="https://github.com/boostcampaitech6/level2-klue-nlp-08/assets/22702278/f37035d2-894a-40fe-bd55-2dab79934c47">
 
@@ -86,7 +86,7 @@ no_relation이 제일 많았다.
 - 특수문자 제거
     - 영어, 한글, 한자, 일본어와 일부 특수문자를 제거
 - train.csv 를 9:1 의 비율로 train 과 valid 데이터셋으로 분리
-이후 파인튜닝 실험에서 klue-roberta-large에 Special Token을 적용한 것이 F1 스코어 71.01로 제일 좋은 점수가 나왔다.
+- 이후 파인튜닝 실험에서 klue-roberta-large에 Special Token을 적용한 것이 F1 스코어 71.01로 제일 좋은 점수가 나왔다.
 
 ## 모델 평가 및 개선
 
