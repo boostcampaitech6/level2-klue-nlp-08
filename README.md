@@ -72,9 +72,9 @@ level2-klue-nlp-08/
 ```
 ## 데이터 분석
 <img width="453" alt="스크린샷 2024-01-19 오후 2 30 36 (1)" src="https://github.com/boostcampaitech6/level2-klue-nlp-08/assets/22702278/b46f381a-5eaf-4b15-b9e7-49589cc85470">
-no_relation이 제일 많았다.
+- no_relation이 제일 많았다.
 <img width="554" alt="스크린샷 2024-01-19 오후 2 39 55" src="https://github.com/boostcampaitech6/level2-klue-nlp-08/assets/22702278/f37035d2-894a-40fe-bd55-2dab79934c47">
-문장 길이는 klue/bert-base의 토크나이저를 통해 토큰화된 단위로 20~60 정도에 대부분 분포되어 있었다.
+- 문장 길이는 klue/bert-base의 토크나이저를 통해 토큰화된 단위로 20~60 정도에 대부분 분포되어 있었다.
 
 ## 데이터 전처리
 - Entity marker 추가
