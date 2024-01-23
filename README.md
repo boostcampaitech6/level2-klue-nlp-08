@@ -56,7 +56,7 @@ level2-klue-nlp-08/
 ├── model/                  // 허깅페이스에서 모델을 불러오는 함수
 │   └── model.py
 ├── preprocessing/          // 데이터셋 전처리, 토크나이징
-│   └── preprocessing.py
+│   ├── preprocessing.py
 │   └── tokenizer.py
 ├── scripts/                // Confusion Matrix와 EDA, 허깅페이스에 모델 업로드하는 코드, 언더샘플링 코드
 │   ├── undersampling.py
