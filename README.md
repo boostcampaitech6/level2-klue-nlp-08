@@ -1,10 +1,21 @@
-# 문장내 개체간 관계 추출
-
-* 문장내 개체간 관계 추출(Relation Extraction)은 어떠한 문장 내에서 두 단어를 선택했을 때 의미적으로 어떤 관계를 가지는가를 추측하는 Task이다.
-* 예를 들어, "브라운은 판교에 산다"는 문장에서 브라운과 판교의 관계는 사람-거주지의 관계가 될 것이다.
-* 좀 더 발전하면, 단어간 관계를 모아서 인공지능에게 지식 체계를 만들어 줄 수도 있다. 이것을 지식 그래프(knowledge graph)라고 한다.
+## 문장 내 개체간 관계 추출 (Relation Extraction)
 ![f938e6c9-4e60-4b5f-ac1d-7ac225430acb](https://github.com/boostcampaitech6/level2-klue-nlp-08/assets/22702278/2defa003-a6bd-40cb-9c38-a0fdd3fe0acf)
+
+<img width="812" alt="Screenshot 2024-01-24 at 4 11 30 PM" src="https://github.com/boostcampaitech6/level2-klue-nlp-08/assets/76895949/55130a0e-6a1a-457f-a95f-dbcd693eb4d0">
+
+* 문장 내 개체간 관계 추출(Relation Extraction)은 어떠한 문장 내에서 두 단어를 선택했을 때 의미적으로 어떤 관계를 가지는가를 추측하는 Task이다.
+* 언어 모델이 주어진 문장을 잘 이해하고 있다면 문장 내 임의의 두 단어들의 관계를 잘 맞출 수 있을 것이다. 이렇게 주어진 문장을 구조화 함으로써 자연어로 표현된 정보 보다 기계가 해석하기 훨씬 수월해 지고 이는 질의응답을 비롯한 다양한 분야에서 유용하게 활용되고 있다.
+다양한 방법을 적용해 봄으로써 RE task에서의 모델 성능을 높여본다
+* 좀 더 발전하면, 단어간 관계를 모아서 인공지능에게 지식 체계를 만들어 줄 수도 있다. 이것을 지식 그래프(knowledge graph)라고 한다.
 * 이를 통해 고도화된 인공지능은 위의 질문처럼 어려운 질문에도 대답할 수 있어진다.
+
+## 프로젝트 내용
+* 주어진 dataset에 대해 의미 있는 분석 결과를 도출하여 향후 실험의 방향을 제시한다.
+* 필요한 전처리 방법을 도입하고 접목할 수 있는 데이터 증강을 고안한다.
+* RE-task에서의 성능 향상을 위해 수행되었던 연구들을 찾아보고 구현하여 실험에 적용한다.
+* 언어모델을 전처리한 문장들로 fine-tuning하여 re-task에서의 성능을 향상시킨다.
+* hugging face tokenizer, model, trainer 라이브러리에 대해 깊게 이해하고 원하는 목적으로 custom하여 실험을 구축한다.
+* 여러 모델들로 앙상블 결과를 도출하여 성능을 올린다.
 
 ## 일정
 
@@ -29,54 +40,42 @@
   - org: 단체 계열. ex: 회사-창립일, 회사-제품, 사장-직원 등 11개.
   - no_relation: 위에 해당하지 못한 것들.
 
-## 실행방법
-- 환경 설치
-  
-  `pip install -r requirements.txt`
-- 학습
-
-  `python train.py`
-- 추론
-
-  `python inference.py`
 ## 프로젝트 구조
 ```
 level2-klue-nlp-08/
 │
-├── train.py                // 학습 시작을 위한 메인 스크립트
-├── train_sweep.py          // train에 하이퍼파라미터 최적화를 더한 코드.
-├── train_configs.py        // train에 설정값 받아오는 부분을 더한 코드.
+├── train.py                // baseline train script
+├── train_sweep.py          // sweep을 사용하는 model train script
+├── train_configs.py        // config.yaml을 통해 학습을 시작하는 train script
 │
-├── inference.py            // 학습 모델의 평가 및 추론을 위한 스크립트
-├── inference_configs.py    // inference에 설정값 받아오는 부분을 더한 코드.
-├── inference_ensemble.py   // inference에 앙상블을 적용해서 여러 모델의 결과값을 조합할 수 있게 된 코드.
+├── inference.py            // model inference script
+├── inference_configs.py    // config.yaml로 모델을 불러와 inference 수행
+├── inference_ensemble.py   // config 파일로 여러 모델을 불러와 앙상블 추론 결과를 얻을 수 있음
 │
 ├── data/                   // 데이터셋 클래스
 │   └── dataset.py
 ├── model/                  // 허깅페이스에서 모델을 불러오는 함수
 │   └── model.py
-├── preprocessing/          // 데이터셋 전처리, 토크나이징
+├── preprocessing/          // 데이터 전처리, 토크나이저
 │   ├── preprocessing.py
 │   └── tokenizer.py
-├── scripts/                // Confusion Matrix와 EDA, 허깅페이스에 모델 업로드하는 코드, 언더샘플링 코드
+├── scripts/                // 기타 script
 │   ├── undersampling.py
-│   ├── upload_model.py
+│   ├── upload_model.py     // 허깅페이스에 모델 업로드
 │   └── classification_evaluation/
-│       └── classification_evaluation.py
+│       └── classification_evaluation.py    // 모델 추론 결과를 Confusion Matrix로 출력
 ├── trainer/                // Focal Loss를 적용한 트레이너 클래스
 │   └── trainer.py
-├── training_recipes/       // 설정값 파일들(.yaml)이 있는 폴더
+├── training_recipes/       // model, train recipe를 config로 담고 있는 파일들
 └── utils/                  // 유틸리티 함수
     ├── utils.py
     └── metrics.py
 ```
 ## 데이터 분석
 <img width="300" alt="스크린샷 2024-01-19 오후 2 30 36 (1)" src="https://github.com/boostcampaitech6/level2-klue-nlp-08/assets/22702278/b46f381a-5eaf-4b15-b9e7-49589cc85470">
-
-라벨은 no_relation이 제일 많았다.
-
 <img width="300" alt="스크린샷 2024-01-19 오후 2 39 55" src="https://github.com/boostcampaitech6/level2-klue-nlp-08/assets/22702278/f37035d2-894a-40fe-bd55-2dab79934c47">
 
+라벨은 no_relation이 제일 많았다.
 문장 길이는 klue/bert-base의 토크나이저를 통해 토큰화된 단위로 20~60 정도에 대부분 분포되어 있었다.
 
 ## 데이터 전처리
